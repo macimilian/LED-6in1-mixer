@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LED Mixer">
+<meta name="theme-color" content="#07070e">
+<title>6in1 LED Mixer</title>
+<!-- Inline SVG icon as data URI for apple-touch-icon -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%2307070e'/%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%2307070e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='90' cy='90' r='55' fill='url(%23g)' opacity='.15'/%3E%3Ccircle cx='90' cy='90' r='48' fill='none' stroke='%23b8ff00' stroke-width='3' opacity='.6'/%3E%3Ccircle cx='90' cy='56' r='10' fill='%23ff2d4a'/%3E%3Ccircle cx='118' cy='73' r='10' fill='%23ffaa33'/%3E%3Ccircle cx='118' cy='107' r='10' fill='%2300e87a'/%3E%3Ccircle cx='90' cy='124' r='10' fill='%233d9fff'/%3E%3Ccircle cx='62' cy='107' r='10' fill='%23a040ff'/%3E%3Ccircle cx='62' cy='73' r='10' fill='%23b8ff00'/%3E%3Ccircle cx='90' cy='90' r='16' fill='%23ffffff' opacity='.9'/%3E%3C/svg%3E">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+:root{
+  --bg:#07070e;--s1:#111120;--s2:#181828;--bd:#252540;
+  --acc:#b8ff00;--txt:#dde0f5;--mut:#5a5a80;--rad:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;overflow-x:hidden;min-height:100%;}
+::-webkit-scrollbar{width:3px;} ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
+
+/* ── HEADER ── */
+header{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;
+  background:var(--s1);border-bottom:1px solid var(--bd);
+  position:sticky;top:0;z-index:60;
+}
+.logo{width:26px;height:26px;border-radius:6px;flex-shrink:0;
+  background:conic-gradient(#ff2d4a 0%,#ffaa33 17%,#b8ff00 33%,#00e87a 50%,#3d9fff 67%,#a040ff 83%,#ff2d4a 100%);}
+.hdr-title{flex:1;}
+header h1{font-size:13px;font-weight:800;letter-spacing:.06em;}
+header p{font-size:8px;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.hdr-icons{display:flex;gap:6px;}
+.icon-btn{
+  width:34px;height:34px;border-radius:8px;border:1px solid var(--bd);background:var(--s2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;
+  transition:background .15s,border-color .15s;flex-shrink:0;user-select:none;
+}
+.icon-btn:active{background:var(--bd);}
+.icon-btn.active{border-color:var(--acc);background:rgba(184,255,0,.1);}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--bd);}
+.tab{flex:1;padding:9px 2px;text-align:center;font-size:10px;font-weight:800;
+  color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;
+  white-space:nowrap;letter-spacing:.04em;transition:color .15s,border-color .15s;}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);}
+
+/* ── PANELS ── */
+.panel{display:none;padding:14px;padding-bottom:50px;}
+.panel.on{display:block;}
+
+/* ── OVERLAY ── */
+.overlay{display:none;position:fixed;inset:0;z-index:80;background:var(--bg);overflow-y:auto;}
+.overlay.on{display:block;}
+.ov-header{display:flex;align-items:center;gap:10px;padding:12px 14px;
+  background:var(--s1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:81;}
+.ov-title{font-size:14px;font-weight:800;flex:1;}
+.ov-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:var(--s2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--mut);}
+.ov-body{padding:14px;padding-bottom:40px;}
+
+/* ── ORB ── */
+.orb-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px;}
+.orb-ring{border-radius:50%;padding:5px;background:var(--s2);border:1px solid var(--bd);}
+.orb{width:100%;height:100%;border-radius:50%;transition:background .04s,box-shadow .04s;position:relative;overflow:hidden;}
+.orb::after{content:'';position:absolute;top:10%;left:12%;width:38%;height:28%;
+  background:rgba(255,255,255,.2);border-radius:50%;filter:blur(5px);}
+
+/* ── READOUT ── */
+.readout{
+  background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);
+  padding:9px 13px;margin-bottom:11px;font-family:'JetBrains Mono',monospace;
+  display:flex;flex-direction:column;gap:5px;
+}
+.ro-line{display:flex;align-items:center;gap:6px;}
+.ro-lbl{font-size:9px;color:var(--mut);letter-spacing:.07em;min-width:30px;}
+.ro-val{color:var(--txt);font-weight:700;font-size:11px;flex:1;letter-spacing:.03em;}
+.ro-copy{font-size:8px;color:var(--mut);border:1px solid var(--bd);border-radius:4px;
+  padding:2px 6px;cursor:pointer;background:var(--bg);font-family:'Syne',sans-serif;font-weight:800;}
+.ro-copy:active{background:var(--bd);}
+
+/* ── MASTER ── */
+.master-bar{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);
+  padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.master-lbl{font-size:10px;font-weight:800;color:var(--acc);letter-spacing:.08em;min-width:50px;}
+.master-pct{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:36px;text-align:right;}
+
+/* ── CHANNELS ── */
+.channels{display:flex;flex-direction:column;gap:7px;}
+.ch{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);padding:9px 12px;
+  display:flex;flex-direction:column;gap:6px;}
+.ch-hd{display:flex;align-items:center;gap:8px;}
+.ch-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ch-nm{font-size:11px;font-weight:800;letter-spacing:.05em;flex:1;}
+.ch-in{background:var(--bg);border:1px solid var(--bd);border-radius:5px;color:var(--txt);
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  width:50px;text-align:center;padding:3px;-webkit-appearance:none;appearance:none;}
+.ch-in:focus{outline:none;border-color:var(--acc);}
+.sl-wrap{height:24px;position:relative;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;
+  outline:none;cursor:pointer;position:absolute;top:50%;transform:translateY(-50%);}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;
+  border-radius:50%;background:#fff;border:3px solid var(--bg);
+  box-shadow:0 0 0 2px rgba(255,255,255,.22);cursor:pointer;}
+
+/* ── BUTTONS ── */
+.btn{padding:10px;border-radius:var(--rad);border:none;font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:800;letter-spacing:.05em;cursor:pointer;transition:opacity .15s,transform .08s;}
+.btn:active{transform:scale(.95);}
+.btn-acc{background:var(--acc);color:#05050e;}
+.btn-out{background:transparent;border:1px solid var(--bd);color:var(--txt);}
+.btn-red{background:transparent;border:1px solid #ff2d4a55;color:#ff2d4a;}
+.row-btns{display:flex;gap:8px;margin-bottom:10px;}
+
+/* ── SECTION TITLE ── */
+.stitle{font-size:9px;font-weight:800;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:7px;margin-top:14px;}
+.stitle:first-child{margin-top:0;}
+
+/* ══════════ PALETTE ══════════ */
+/* XY canvas stays pure – no lightness overlay */
+#xyPad{width:100%;aspect-ratio:1;border-radius:var(--rad);cursor:crosshair;
+  touch-action:none;border:1px solid var(--bd);display:block;}
+.xy-container{position:relative;margin-bottom:8px;}
+.xy-crosshair{position:absolute;width:18px;height:18px;border-radius:50%;
+  border:2.5px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.7);
+  pointer-events:none;transform:translate(-50%,-50%);}
+
+/* Row: label + slider + number */
+.row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.row-lbl{font-size:9px;font-weight:800;color:var(--mut);min-width:28px;letter-spacing:.05em;white-space:nowrap;}
+.row-num{background:var(--bg);border:1px solid var(--bd);border-radius:5px;color:var(--txt);
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:44px;text-align:center;padding:3px;}
+
+/* White-balance custom track */
+.wb-track{flex:1;height:22px;border-radius:4px;position:relative;cursor:pointer;
+  background:linear-gradient(to right,#c8deff,#f4f4f4,#ffb347);border:1px solid var(--bd);touch-action:none;}
+.wb-thumb{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;
+  background:#fff;border:3px solid #333;box-shadow:0 0 0 2px rgba(255,255,255,.3);
+  transform:translate(-50%,-50%);pointer-events:none;}
+
+/* Palette preview mini card */
+.pal-preview{
+  display:flex;align-items:center;gap:12px;
+  background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);
+  padding:10px 12px;margin-bottom:10px;
+}
+.pal-orb-sm{width:48px;height:48px;border-radius:50%;flex-shrink:0;
+  transition:background .04s,box-shadow .04s;}
+.pal-vals{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mut);line-height:1.7;}
+.pal-vals b{color:var(--txt);}
+
+/* Section box */
+.sec-box{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);
+  padding:10px 12px;margin-bottom:8px;}
+.sec-box-title{font-size:9px;font-weight:800;color:var(--acc);letter-spacing:.08em;margin-bottom:8px;}
+
+/* ══════════ PRESETS ══════════ */
+.pg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px;}
+.pb{border-radius:8px;height:44px;cursor:pointer;border:2px solid transparent;
+  transition:border-color .1s,transform .08s;position:relative;overflow:hidden;}
+.pb:active{transform:scale(.92);}
+.pb-lbl{font-size:8px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.9);
+  letter-spacing:.03em;position:absolute;bottom:3px;left:0;right:0;text-align:center;}
+
+/* ══════════ SAVED ══════════ */
+.saved-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.sc{border-radius:10px;overflow:hidden;border:1px solid var(--bd);transition:transform .08s;}
+.sc:active{transform:scale(.93);}
+.sc-sw{height:50px;}
+.sc-body{background:var(--s2);padding:6px;}
+.sc-nm{font-size:10px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sc-cd{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--mut);}
+.sc-acts{display:flex;gap:3px;margin-top:4px;}
+.mbt{flex:1;font-size:8px;font-weight:800;padding:3px 0;border-radius:4px;
+  border:1px solid var(--bd);background:var(--bg);color:var(--txt);
+  cursor:pointer;text-align:center;font-family:'Syne',sans-serif;}
+.mbt.r{border-color:#ff2d4a44;color:#ff2d4a;}
+.empty{text-align:center;padding:30px;color:var(--mut);font-size:12px;}
+.empty .ic{font-size:28px;margin-bottom:6px;}
+
+/* ══════════ SETTINGS ══════════ */
+.setting-group{background:var(--s2);border:1px solid var(--bd);border-radius:var(--rad);
+  padding:12px;margin-bottom:10px;}
+.sg-title{font-size:9px;font-weight:800;color:var(--acc);letter-spacing:.08em;margin-bottom:10px;}
+.sg-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sg-lbl{font-size:10px;font-weight:700;flex:1;}
+.sg-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;min-width:34px;text-align:right;}
+.sg-note{font-size:9px;color:var(--mut);margin-top:4px;line-height:1.5;}
+.sg-toggle{display:flex;gap:4px;flex-wrap:wrap;}
+.sg-opt{padding:4px 8px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);
+  color:var(--mut);font-size:9px;font-weight:800;cursor:pointer;font-family:'Syne',sans-serif;}
+.sg-opt.on{border-color:var(--acc);color:var(--acc);background:rgba(184,255,0,.08);}
+
+/* ── MODAL ── */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;
+  align-items:flex-end;justify-content:center;}
+.mo.on{display:flex;}
+.mo-box{background:var(--s1);border:1px solid var(--bd);border-radius:18px 18px 0 0;
+  padding:18px;width:100%;max-width:500px;}
+.mo-box h3{font-size:14px;font-weight:800;margin-bottom:12px;}
+.mo-box input[type=text]{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:8px;
+  color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;padding:10px 12px;margin-bottom:12px;}
+.mo-box input[type=text]:focus{outline:none;border-color:var(--acc);}
+.mo-btns{display:flex;gap:8px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(70px);
+  background:var(--acc);color:#05050e;padding:8px 16px;border-radius:30px;
+  font-size:11px;font-weight:800;letter-spacing:.04em;z-index:300;
+  transition:transform .26s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;}
+.toast.on{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"></div>
+  <div class="hdr-title">
+    <h1>6in1 LED MIXER</h1>
+    <p>SHEHDS 7×18W · RGBWA+UV</p>
+  </div>
+  <div class="hdr-icons">
+    <div class="icon-btn" id="heartBtn" onclick="toggleOverlay('savedOv','heartBtn')">♡</div>
+    <div class="icon-btn" id="gearBtn"  onclick="toggleOverlay('settingsOv','gearBtn')">⚙</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab on" data-p="mixer">MIXER</div>
+  <div class="tab"    data-p="palette">PALETTE</div>
+  <div class="tab"    data-p="presets">PRESETS</div>
+</div>
+
+<!-- iPhone Install Banner -->
+<div id="installBanner" style="
+  display:flex;align-items:center;gap:10px;padding:9px 14px;
+  background:linear-gradient(135deg,rgba(184,255,0,.08),rgba(0,100,255,.06));
+  border-bottom:1px solid var(--bd);font-size:10px;
+">
+  <span style="font-size:18px;flex-shrink:0">📱</span>
+  <span style="flex:1;color:var(--mut);line-height:1.4">
+    <b style="color:var(--acc)">Als iPhone-App speichern:</b>
+    Safari → Teilen-Button <b>⎙</b> → „Zum Home-Bildschirm" → App-Icon erscheint
+  </span>
+  <span onclick="document.getElementById('installBanner').style.display='none'"
+    style="color:var(--mut);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0">✕</span>
+</div>
+
+<!-- ═══════════════ MIXER ═══════════════ -->
+<div id="panel-mixer" class="panel on">
+  <div class="orb-wrap">
+    <div class="orb-ring" style="width:140px;height:140px">
+      <div class="orb" id="mainOrb"></div>
+    </div>
+  </div>
+  <div class="readout">
+    <div class="ro-line">
+      <span class="ro-lbl">RGB</span>
+      <span class="ro-val" id="rgbVal">rgb(0, 0, 0)</span>
+      <span class="ro-copy" onclick="copyVal('rgb')">COPY</span>
+    </div>
+    <div class="ro-line">
+      <span class="ro-lbl">DMX</span>
+      <span class="ro-val" id="dmxVal">r:0  g:0  b:0  cw:0  ww:0  uv:0</span>
+      <span class="ro-copy" onclick="copyVal('dmx')">COPY</span>
+    </div>
+  </div>
+  <div class="master-bar">
+    <div class="master-lbl">MASTER</div>
+    <div class="sl-wrap" style="flex:1">
+      <input type="range" id="masterSl" min="0" max="100" value="100">
+    </div>
+    <div class="master-pct" id="masterPct">100%</div>
+  </div>
+  <div class="channels" id="chList"></div>
+  <div style="margin-top:12px">
+    <button class="btn btn-acc" style="width:100%" onclick="openSaveMo()">♡ FARBE SPEICHERN</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PALETTE ═══════════════ -->
+<div id="panel-palette" class="panel">
+
+  <!-- XY Pad: pure Hue×Sat at 50% lightness, no overlay -->
+  <div class="stitle">FARBE — Hue × Sättigung</div>
+  <div class="xy-container" id="xyContainer">
+    <canvas id="xyPad"></canvas>
+    <div class="xy-crosshair" id="xyCross" style="left:0%;top:0%"></div>
+  </div>
+
+  <!-- BOX 1: Farbe (HUE, SAT, HELL, RGB-Stärke) -->
+  <div class="sec-box">
+    <div class="sec-box-title">FARBE</div>
+    <div class="row">
+      <div class="row-lbl">HUE</div>
+      <div class="sl-wrap" style="flex:1">
+        <input type="range" id="palH" min="0" max="359" value="0"
+          style="background:linear-gradient(to right,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000)">
+      </div>
+      <input class="row-num" type="number" id="palHN" min="0" max="359" value="0">
+    </div>
+    <div class="row">
+      <div class="row-lbl">SAT</div>
+      <div class="sl-wrap" style="flex:1">
+        <input type="range" id="palS" min="0" max="100" value="100">
+      </div>
+      <input class="row-num" type="number" id="palSN" min="0" max="100" value="100">
+    </div>
+    <div class="row">
+      <div class="row-lbl">HELL</div>
+      <div class="sl-wrap" style="flex:1">
+        <input type="range" id="palL" min="0" max="100" value="50"
+          style="background:linear-gradient(to right,#111,#fff)">
+      </div>
+      <input class="row-num" type="number" id="palLN" min="0" max="100" value="50">
+    </div>
+    <div class="row">
+      <div class="row-lbl">RGB</div>
+      <div class="sl-wrap" style="flex:1">
+        <input type="range" id="palRGB" min="0" max="255" value="255"
+          style="background:linear-gradient(to right,#252540,#ffffff)">
+      </div>
+      <input class="row-num" type="number" id="palRGBN" min="0" max="255" value="255">
+    </div>
+  </div>
+
+  <!-- BOX 2: Weißlicht + UV (alle Sonderkanäle zusammen) -->
+  <div class="sec-box">
+    <div class="sec-box-title" style="display:flex;align-items:center;gap:8px">
+      <span style="flex:1">WEISSLICHT & UV</span>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:9px;font-weight:800;color:var(--mut)">
+        <input type="checkbox" id="palShowInXY" checked style="width:14px;height:14px;accent-color:var(--acc)">
+        IN PALETTE ZEIGEN
+      </label>
+    </div>
+    <div class="row" style="align-items:center;margin-top:4px">
+      <div class="row-lbl" style="color:#c8deff;font-size:8px">CW</div>
+      <div class="wb-track" id="wbTrack">
+        <div class="wb-thumb" id="wbThumb" style="left:0%"></div>
+      </div>
+      <div class="row-lbl" style="color:#ffb347;font-size:8px;min-width:22px;text-align:right">WW</div>
+    </div>
+    <div class="row">
+      <div class="row-lbl">MENGE</div>
+      <div class="sl-wrap" style="flex:1">
+        <input type="range" id="palWAmt" min="0" max="255" value="0"
+          style="background:linear-gradient(to right,#4a4a6a,#f0eedd)">
+      </div>
+      <input class="row-num" type="number" id="palWAmtN" min="0" max="255" value="0">
+    </div>
+    <div class="row">
+      <div class="row-lbl">UV</div>
+      <div class="sl-wrap" style="flex:1">
+        <input type="range" id="palUV" min="0" max="255" value="0"
+          style="background:linear-gradient(to right,#252540,#a040ff)">
+      </div>
+      <input class="row-num" type="number" id="palUVN" min="0" max="255" value="0">
+    </div>
+  </div>
+
+  <!-- Live mini preview -->
+  <div class="pal-preview">
+    <div class="pal-orb-sm" id="palOrb"></div>
+    <div class="pal-vals" id="palVals">
+      <b>rgb(0,0,0)</b><br>
+      cw:0  ww:0  uv:0
+    </div>
+  </div>
+
+  <div class="row-btns">
+    <button class="btn btn-acc" style="flex:1" onclick="applyPalette()">→ IN MIXER LADEN</button>
+    <button class="btn btn-out" style="flex:1" onclick="openSaveMo()">♡ SPEICHERN</button>
+  </div>
+</div>
+
+<!-- ═══════════════ PRESETS ═══════════════ -->
+<div id="panel-presets" class="panel">
+  <div class="stitle">GRUNDFARBEN</div><div class="pg" id="pgBasic"></div>
+  <div class="stitle">WEISS & NATÜRLICH</div><div class="pg" id="pgWhite"></div>
+  <div class="stitle">AMBER & WARM</div><div class="pg" id="pgAmber"></div>
+  <div class="stitle">PASTELL & SOFT</div><div class="pg" id="pgPastel"></div>
+  <div class="stitle">BÜHNENLICHT</div><div class="pg" id="pgStage"></div>
+  <div class="stitle">CLUB & PARTY</div><div class="pg" id="pgClub"></div>
+  <div class="stitle">UV & SPECIAL FX</div><div class="pg" id="pgUV"></div>
+  <div class="stitle">STIMMUNG</div><div class="pg" id="pgMood"></div>
+</div>
+
+<!-- ═══════════════ OVERLAY: GESPEICHERT ═══════════════ -->
+<div id="savedOv" class="overlay">
+  <div class="ov-header">
+    <div class="ov-title">♡ Gespeicherte Farben</div>
+    <div class="ov-close" onclick="toggleOverlay('savedOv','heartBtn')">✕</div>
+  </div>
+  <div class="ov-body">
+    <div class="row-btns">
+      <button class="btn btn-out" style="flex:1" onclick="openSaveMo()">＋ AKTUELLE FARBE SPEICHERN</button>
+      <button class="btn btn-red" onclick="clearAll()">ALLE ✕</button>
+    </div>
+    <div class="saved-grid" id="savedGrid"></div>
+    <div id="emptyState" class="empty">
+      <div class="ic">🎨</div>
+      Noch keine Farben gespeichert.<br>
+      <span style="font-size:10px;color:var(--mut)">Im Mixer „Speichern" tippen.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ OVERLAY: EINSTELLUNGEN ═══════════════ -->
+<div id="settingsOv" class="overlay">
+  <div class="ov-header">
+    <div class="ov-title">⚙ Einstellungen</div>
+    <div class="ov-close" onclick="toggleOverlay('settingsOv','gearBtn')">✕</div>
+  </div>
+  <div class="ov-body">
+
+    <div class="setting-group">
+      <div class="sg-title">FARBMISCHMODELL</div>
+      <div class="sg-note" style="margin-bottom:10px">
+        Wie wirken CW, WW und UV auf die RGB-Vorschau?
+        Die Werte bestimmen den RGB-Anteil jedes Kanals.
+        Kalt Weiß 7500K ≈ bläulich, Warm Weiß 3200K ≈ amber, UV 395nm ≈ lila.
+      </div>
+      <div class="sg-row"><div class="sg-lbl">CW → Rot</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="cwR" min="0" max="100" value="78"></div>
+        <div class="sg-val" id="cwRv">78%</div></div>
+      <div class="sg-row"><div class="sg-lbl">CW → Grün</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="cwG" min="0" max="100" value="86"></div>
+        <div class="sg-val" id="cwGv">86%</div></div>
+      <div class="sg-row"><div class="sg-lbl">CW → Blau</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="cwB" min="0" max="100" value="100"></div>
+        <div class="sg-val" id="cwBv">100%</div></div>
+      <div class="sg-row"><div class="sg-lbl">WW → Rot</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="wwR" min="0" max="100" value="100"></div>
+        <div class="sg-val" id="wwRv">100%</div></div>
+      <div class="sg-row"><div class="sg-lbl">WW → Grün</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="wwG" min="0" max="100" value="64"></div>
+        <div class="sg-val" id="wwGv">64%</div></div>
+      <div class="sg-row"><div class="sg-lbl">WW → Blau</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="wwB" min="0" max="100" value="28"></div>
+        <div class="sg-val" id="wwBv">28%</div></div>
+      <div class="sg-row"><div class="sg-lbl">UV → Rot</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvR" min="0" max="100" value="10"></div>
+        <div class="sg-val" id="uvRv">10%</div></div>
+      <div class="sg-row"><div class="sg-lbl">UV → Grün</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvG" min="0" max="100" value="0"></div>
+        <div class="sg-val" id="uvGv">0%</div></div>
+      <div class="sg-row"><div class="sg-lbl">UV → Blau</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvB" min="0" max="100" value="55"></div>
+        <div class="sg-val" id="uvBv">55%</div></div>
+      <button class="btn btn-out" style="width:100%;margin-top:4px" onclick="resetMix()">↺ Standard wiederherstellen</button>
+    </div>
+
+    <div class="setting-group">
+      <div class="sg-title">DMX-ANZEIGEFORMAT</div>
+      <div class="sg-toggle" id="dmxFmtToggle">
+        <div class="sg-opt on" data-fmt="short">r:0 g:0 b:0 …</div>
+        <div class="sg-opt" data-fmt="nums">0 0 0 0 0 0</div>
+        <div class="sg-opt" data-fmt="ch">CH1:0 CH2:0 …</div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="sg-title">DATEN</div>
+      <button class="btn btn-red" style="width:100%"
+        onclick="if(confirm('Wirklich alle Daten löschen?')){localStorage.clear();saved=[];renderSaved();toast('Zurückgesetzt');}">
+        Alle gespeicherten Farben löschen
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Save Modal -->
+<div class="mo" id="saveMo">
+  <div class="mo-box">
+    <h3>♡ Farbe benennen</h3>
+    <input type="text" id="colorName" placeholder="z.B. Warmes Bühnenlicht" maxlength="30">
+    <div class="mo-btns">
+      <button class="btn btn-out" style="flex:1" onclick="closeMo()">ABBRECHEN</button>
+      <button class="btn btn-acc" style="flex:1" onclick="doSave()">SPEICHERN</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+let MIX = { cwR:.78,cwG:.86,cwB:1.00, wwR:1.00,wwG:.64,wwB:.28, uvR:.10,uvG:.00,uvB:.55 };
+let dmxFmt = 'short';
+
+const CHS = [
+  {id:'r',  nm:'ROT',       col:'#ff2d4a', dmx:1},
+  {id:'g',  nm:'GRÜN',      col:'#00e87a', dmx:2},
+  {id:'b',  nm:'BLAU',      col:'#3d9fff', dmx:3},
+  {id:'cw', nm:'KALT WEIß', col:'#c8e0ff', dmx:4},
+  {id:'ww', nm:'WARM WEIß', col:'#ffaa33', dmx:5},
+  {id:'uv', nm:'UV',        col:'#a040ff', dmx:6},
+];
+
+let V = {r:0, g:0, b:0, cw:0, ww:0, uv:0};
+let master = 100;
+let saved  = JSON.parse(localStorage.getItem('sh6_v3') || '[]');
+
+// Palette state
+let palH=0, palS=100, palL=50, palWB=0, palWAmt=0, palUVval=0, palRGBamt=255, palShowInXY=true;
+
+// ══════════════════════════════════════════════
+//  COLOR MATH — correct additive mixing with
+//  normalisation so mixed result stays ≤255
+//  but the CONTRIBUTION of each channel shifts
+//  the hue correctly instead of just clipping.
+// ══════════════════════════════════════════════
+function computeRGB(v, m) {
+  const f = (m ?? master) / 100;
+
+  // Step 1: each LED contributes its colour
+  // RGB channels contribute pure colour
+  // CW/WW/UV contribute their spectral equivalent
+  let R = v.r + v.cw * MIX.cwR + v.ww * MIX.wwR + v.uv * MIX.uvR;
+  let G = v.g + v.cw * MIX.cwG + v.ww * MIX.wwG + v.uv * MIX.uvG;
+  let B = v.b + v.cw * MIX.cwB + v.ww * MIX.wwB + v.uv * MIX.uvB;
+
+  // Step 2: normalise — if any channel exceeds 255,
+  // scale ALL down proportionally so the ratio (= hue) is preserved
+  const maxCh = Math.max(R, G, B);
+  if (maxCh > 255) {
+    const scale = 255 / maxCh;
+    R *= scale; G *= scale; B *= scale;
+  }
+
+  // Step 3: apply master dimmer
+  return {
+    R: Math.round(R * f),
+    G: Math.round(G * f),
+    B: Math.round(B * f),
+  };
+}
+
+function dmxScaled() {
+  const f = master / 100;
+  return CHS.map(ch => Math.round(V[ch.id] * f));
+}
+
+function fmtDMX(sc) {
+  if (dmxFmt === 'nums') return sc.join('  ');
+  if (dmxFmt === 'ch')   return CHS.map((c,i)=>`CH${c.dmx}:${sc[i]}`).join('  ');
+  const ids = ['r','g','b','cw','ww','uv'];
+  return ids.map((id,i)=>`${id}:${sc[i]}`).join('  ');
+}
+
+function hslToRgb(h, s, l) {
+  s /= 100; l /= 100;
+  const k = n => (n + h/30) % 12;
+  const a = s * Math.min(l, 1-l);
+  const f = n => Math.round((l - a * Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n), 1)))) * 255);
+  return {R: f(0), G: f(8), B: f(4)};
+}
+
+// ── TABS ───────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById('panel-' + t.dataset.p).classList.add('on');
+    if (t.dataset.p === 'palette') { drawXY(); updatePalPreview(); }
+  });
+});
+
+function gotoMixer() {
+  document.querySelectorAll('.tab').forEach(t => { if(t.dataset.p==='mixer') t.click(); });
+}
+
+// ── OVERLAY ────────────────────────────────────
+function toggleOverlay(id, btnId) {
+  const ov  = document.getElementById(id);
+  const btn = document.getElementById(btnId);
+  const wasOn = ov.classList.contains('on');
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('on'));
+  document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+  if (!wasOn) {
+    ov.classList.add('on'); btn.classList.add('active');
+    if (id === 'savedOv') renderSaved();
+  }
+}
+
+// ── CHANNELS ────────────────────────────────────
+function buildChs() {
+  const list = document.getElementById('chList');
+  list.innerHTML = '';
+  CHS.forEach(ch => {
+    const d = document.createElement('div');
+    d.className = 'ch';
+    d.innerHTML = `
+      <div class="ch-hd">
+        <div class="ch-dot" style="background:${ch.col}"></div>
+        <div class="ch-nm" style="color:${ch.col}">${ch.nm}</div>
+        <input class="ch-in" type="number" id="n_${ch.id}" min="0" max="255" value="0">
+      </div>
+      <div class="sl-wrap">
+        <input type="range" id="s_${ch.id}" min="0" max="255" value="0"
+          style="background:linear-gradient(to right,${ch.col} 0%,${ch.col} 0%,#252540 0%)">
+      </div>`;
+    list.appendChild(d);
+    const sl = d.querySelector(`#s_${ch.id}`);
+    const ni = d.querySelector(`#n_${ch.id}`);
+    sl.addEventListener('input', () => { const v=+sl.value; V[ch.id]=v; ni.value=v; slBg(sl,ch.col); updateAll(); });
+    ni.addEventListener('input', () => { const v=clamp(+ni.value||0); V[ch.id]=v; sl.value=v; slBg(sl,ch.col); updateAll(); });
+  });
+}
+
+const clamp = (v,lo=0,hi=255) => Math.max(lo, Math.min(hi, v));
+
+function slBg(sl, col) {
+  const p = (sl.value/255)*100;
+  sl.style.background = `linear-gradient(to right,${col} 0%,${col} ${p}%,#252540 ${p}%)`;
+}
+
+function setCh(id, val) {
+  V[id] = val;
+  const sl = document.getElementById('s_'+id);
+  const ni = document.getElementById('n_'+id);
+  const ch = CHS.find(c=>c.id===id);
+  if(sl){ sl.value=val; slBg(sl,ch.col); }
+  if(ni) ni.value = val;
+}
+
+function setAll(v) {
+  CHS.forEach(ch => setCh(ch.id, v[ch.id]??0));
+  updateAll();
+}
+
+// ── MASTER ──────────────────────────────────────
+const mSl = document.getElementById('masterSl');
+mSl.addEventListener('input', () => {
+  master = +mSl.value;
+  document.getElementById('masterPct').textContent = master + '%';
+  mSl.style.background = `linear-gradient(to right,var(--acc) 0%,var(--acc) ${master}%,#252540 ${master}%)`;
+  updateAll();
+});
+
+// ── UPDATE ALL ───────────────────────────────────
+function updateAll() {
+  const {R,G,B} = computeRGB(V);
+  const rgb = `rgb(${R},${G},${B})`;
+  const sh  = `0 0 50px 12px rgba(${R},${G},${B},.28)`;
+  document.getElementById('mainOrb').style.background = rgb;
+  document.getElementById('mainOrb').style.boxShadow  = sh;
+  document.getElementById('rgbVal').textContent  = `rgb(${R}, ${G}, ${B})`;
+  document.getElementById('dmxVal').textContent  = fmtDMX(dmxScaled());
+}
+
+function copyVal(what) {
+  let txt = '';
+  if(what==='rgb'){ const {R,G,B}=computeRGB(V); txt=`rgb(${R}, ${G}, ${B})`; }
+  if(what==='dmx') txt = fmtDMX(dmxScaled());
+  navigator.clipboard?.writeText(txt).then(()=>toast('Kopiert!')).catch(()=>toast('Fehlgeschlagen'));
+}
+
+// ══════════════════════════════════════════════
+//  XY PAD — drawn at fixed L=50, no redraw on L change
+// ══════════════════════════════════════════════
+let xyCanvas, xyCtx, xyActive=false, xyDrawn=false;
+
+function drawXY() {
+  xyCanvas = document.getElementById('xyPad');
+  xyCtx    = xyCanvas.getContext('2d');
+  const W  = xyCanvas.offsetWidth || (document.body.offsetWidth - 28);
+  xyCanvas.width = W; xyCanvas.height = W;
+  const imgd = xyCtx.createImageData(W, W);
+
+  // Compute the CW/WW/UV tint colour that gets blended in if enabled
+  const cwAmt = Math.round(palWAmt * (1 - palWB/100));
+  const wwAmt = Math.round(palWAmt * (palWB/100));
+  // tint RGB contribution from white/UV channels at full RGB (scale factor applied per pixel)
+  const tR = MIX.cwR*cwAmt + MIX.wwR*wwAmt + MIX.uvR*palUVval;
+  const tG = MIX.cwG*cwAmt + MIX.wwG*wwAmt + MIX.uvG*palUVval;
+  const tB = MIX.cwB*cwAmt + MIX.wwB*wwAmt + MIX.uvB*palUVval;
+
+  for(let y=0; y<W; y++) {
+    for(let x=0; x<W; x++) {
+      const h = (x/W)*360;
+      const s = 100 - (y/W)*100;
+      // Use actual palL so the pad reflects brightness changes
+      const {R:rr,G:gg,B:bb} = hslToRgb(h, s, palL);
+      // Scale by RGB amount (0–255)
+      let R = rr * (palRGBamt/255);
+      let G = gg * (palRGBamt/255);
+      let B = bb * (palRGBamt/255);
+      // Optionally blend in CW/WW/UV tint
+      if(palShowInXY) { R += tR; G += tG; B += tB; }
+      // Normalise
+      const mx = Math.max(R,G,B);
+      if(mx>255){ const sc=255/mx; R*=sc; G*=sc; B*=sc; }
+      const i = (y*W+x)*4;
+      imgd.data[i]=Math.round(R); imgd.data[i+1]=Math.round(G); imgd.data[i+2]=Math.round(B); imgd.data[i+3]=255;
+    }
+  }
+  xyCtx.putImageData(imgd, 0, 0);
+  xyDrawn = true;
+  updateCrossPos();
+}
+
+function xyFromEvent(e) {
+  const rect = xyCanvas.getBoundingClientRect();
+  const cx   = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy   = e.touches ? e.touches[0].clientY : e.clientY;
+  const x    = Math.max(0, Math.min(1, (cx-rect.left)/rect.width));
+  const y    = Math.max(0, Math.min(1, (cy-rect.top)/rect.height));
+  palH = Math.round(x*360); if(palH>359) palH=359;
+  palS = Math.round(100 - y*100);
+  // sync sliders
+  document.getElementById('palH').value  = palH;
+  document.getElementById('palHN').value = palH;
+  document.getElementById('palS').value  = palS;
+  document.getElementById('palSN').value = palS;
+  updateCrossPos();
+  updatePalPreview();
+}
+
+function updateCrossPos() {
+  if(!xyCanvas) return;
+  const cross = document.getElementById('xyCross');
+  const W     = xyCanvas.offsetWidth;
+  cross.style.left = ((palH/360)*W) + 'px';
+  cross.style.top  = ((1-palS/100)*W) + 'px';
+}
+
+const xyEl = document.getElementById('xyPad');
+xyEl.addEventListener('mousedown',  e=>{ xyActive=true; xyFromEvent(e); });
+document.addEventListener('mousemove', e=>{ if(xyActive) xyFromEvent(e); });
+document.addEventListener('mouseup',   ()=>xyActive=false);
+xyEl.addEventListener('touchstart', e=>{ e.preventDefault(); xyFromEvent(e); }, {passive:false});
+xyEl.addEventListener('touchmove',  e=>{ e.preventDefault(); xyFromEvent(e); }, {passive:false});
+
+// HUE slider
+const palHSl=document.getElementById('palH'), palHN=document.getElementById('palHN');
+palHSl.addEventListener('input', ()=>{ palH=+palHSl.value; palHN.value=palH; updateCrossPos(); updatePalPreview(); });
+palHN.addEventListener('input',  ()=>{ palH=clamp(+palHN.value||0,0,359); palHSl.value=palH; updateCrossPos(); updatePalPreview(); });
+
+// SAT slider
+const palSSl=document.getElementById('palS'), palSN=document.getElementById('palSN');
+palSSl.addEventListener('input', ()=>{ palS=+palSSl.value; palSN.value=palS; updateCrossPos(); updatePalPreview(); });
+palSN.addEventListener('input',  ()=>{ palS=clamp(+palSN.value||0,0,100); palSSl.value=palS; updateCrossPos(); updatePalPreview(); });
+
+// Lightness slider — NOW repaints XY so brightness is visible
+const palLSl=document.getElementById('palL'), palLN=document.getElementById('palLN');
+palLSl.addEventListener('input', ()=>{ palL=+palLSl.value; palLN.value=palL; drawXY(); updatePalPreview(); });
+palLN.addEventListener('input',  ()=>{ palL=clamp(+palLN.value||0,0,100); palLSl.value=palL; drawXY(); updatePalPreview(); });
+
+// RGB strength slider
+const palRGBSl=document.getElementById('palRGB'), palRGBN=document.getElementById('palRGBN');
+palRGBSl.addEventListener('input', ()=>{
+  palRGBamt=+palRGBSl.value; palRGBN.value=palRGBamt;
+  const p=(palRGBamt/255)*100;
+  palRGBSl.style.background=`linear-gradient(to right,#252540,#ffffff ${p}%,#252540 ${p}%)`;
+  drawXY(); updatePalPreview();
+});
+palRGBN.addEventListener('input', ()=>{
+  palRGBamt=clamp(+palRGBN.value||0); palRGBSl.value=palRGBamt;
+  drawXY(); updatePalPreview();
+});
+
+// Show-in-palette toggle
+document.getElementById('palShowInXY').addEventListener('change', function(){
+  palShowInXY=this.checked; drawXY();
+});
+
+// White balance track (CW ↔ WW)
+let wbActive=false;
+const wbTrack=document.getElementById('wbTrack'), wbThumb=document.getElementById('wbThumb');
+function wbFromEvent(e) {
+  const rect=wbTrack.getBoundingClientRect();
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  palWB=Math.max(0,Math.min(100,((cx-rect.left)/rect.width)*100));
+  wbThumb.style.left=palWB+'%';
+  drawXY();
+  updatePalPreview();
+}
+wbTrack.addEventListener('mousedown',  e=>{ wbActive=true; wbFromEvent(e); });
+document.addEventListener('mousemove', e=>{ if(wbActive) wbFromEvent(e); });
+document.addEventListener('mouseup',   ()=>wbActive=false);
+wbTrack.addEventListener('touchstart', e=>{ e.preventDefault(); wbFromEvent(e); }, {passive:false});
+wbTrack.addEventListener('touchmove',  e=>{ e.preventDefault(); wbFromEvent(e); }, {passive:false});
+
+// White amount
+const palWAmtSl=document.getElementById('palWAmt'), palWAmtN=document.getElementById('palWAmtN');
+palWAmtSl.addEventListener('input',()=>{ palWAmt=+palWAmtSl.value; palWAmtN.value=palWAmt; drawXY(); updatePalPreview(); });
+palWAmtN.addEventListener('input', ()=>{ palWAmt=clamp(+palWAmtN.value||0); palWAmtSl.value=palWAmt; drawXY(); updatePalPreview(); });
+
+// UV
+const palUVSl=document.getElementById('palUV'), palUVN=document.getElementById('palUVN');
+palUVSl.addEventListener('input',()=>{ palUVval=+palUVSl.value; palUVN.value=palUVval;
+  const p=(palUVval/255)*100; palUVSl.style.background=`linear-gradient(to right,#252540,#a040ff ${p}%,#252540 ${p}%)`; drawXY(); updatePalPreview(); });
+palUVN.addEventListener('input', ()=>{ palUVval=clamp(+palUVN.value||0); palUVSl.value=palUVval; drawXY(); updatePalPreview(); });
+
+function updatePalPreview() {
+  // Get base colour from HSL
+  const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
+  // Scale by RGB strength
+  const R = Math.round(rr * (palRGBamt/255));
+  const G = Math.round(gg * (palRGBamt/255));
+  const B = Math.round(bb * (palRGBamt/255));
+  const cwAmt   = Math.round(palWAmt * (1-palWB/100));
+  const wwAmt   = Math.round(palWAmt * (palWB/100));
+  const pv = {r:R, g:G, b:B, cw:cwAmt, ww:wwAmt, uv:palUVval};
+  const {R:PR,G:PG,B:PB} = computeRGB(pv, 100);
+  const rgb = `rgb(${PR},${PG},${PB})`;
+  document.getElementById('palOrb').style.background = rgb;
+  document.getElementById('palOrb').style.boxShadow  = `0 0 20px 6px rgba(${PR},${PG},${PB},.5)`;
+  document.getElementById('palVals').innerHTML =
+    `<b>${rgb}</b><br>r:${R} g:${G} b:${B}<br>cw:${cwAmt}  ww:${wwAmt}  uv:${palUVval}`;
+}
+
+function applyPalette() {
+  const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
+  const R = Math.round(rr * (palRGBamt/255));
+  const G = Math.round(gg * (palRGBamt/255));
+  const B = Math.round(bb * (palRGBamt/255));
+  const cwAmt   = Math.round(palWAmt * (1-palWB/100));
+  const wwAmt   = Math.round(palWAmt * (palWB/100));
+  setAll({r:R, g:G, b:B, cw:cwAmt, ww:wwAmt, uv:palUVval});
+  gotoMixer();
+  toast('Farbe übernommen');
+}
+
+// ══════════════════════════════════════════════
+//  PRESETS
+// ══════════════════════════════════════════════
+const PRESET_GROUPS = {
+  pgBasic:[
+    {nm:'Rot',      v:{r:255,g:0,b:0,cw:0,ww:0,uv:0}},
+    {nm:'Grün',     v:{r:0,g:255,b:0,cw:0,ww:0,uv:0}},
+    {nm:'Blau',     v:{r:0,g:0,b:255,cw:0,ww:0,uv:0}},
+    {nm:'Cyan',     v:{r:0,g:255,b:255,cw:0,ww:0,uv:0}},
+    {nm:'Magenta',  v:{r:255,g:0,b:255,cw:0,ww:0,uv:0}},
+    {nm:'Gelb',     v:{r:255,g:220,b:0,cw:0,ww:0,uv:0}},
+    {nm:'Orange',   v:{r:255,g:80,b:0,cw:0,ww:0,uv:0}},
+    {nm:'Violett',  v:{r:130,g:0,b:200,cw:0,ww:0,uv:0}},
+  ],
+  pgWhite:[
+    {nm:'Kalt WW',  v:{r:0,g:0,b:0,cw:255,ww:0,uv:0}},
+    {nm:'Neutral',  v:{r:0,g:0,b:0,cw:160,ww:140,uv:0}},
+    {nm:'Warm WW',  v:{r:0,g:0,b:0,cw:0,ww:255,uv:0}},
+    {nm:'Tageslicht',v:{r:0,g:10,b:40,cw:255,ww:60,uv:0}},
+    {nm:'Mondlicht',v:{r:0,g:0,b:30,cw:200,ww:0,uv:20}},
+    {nm:'Studio',   v:{r:0,g:0,b:0,cw:220,ww:100,uv:0}},
+    {nm:'Büro',     v:{r:0,g:0,b:0,cw:255,ww:30,uv:0}},
+    {nm:'Gemütlich',v:{r:20,g:0,b:0,cw:40,ww:220,uv:0}},
+  ],
+  pgAmber:[
+    {nm:'Bernstein',v:{r:255,g:120,b:0,cw:0,ww:180,uv:0}},
+    {nm:'Gold',     v:{r:255,g:190,b:0,cw:0,ww:140,uv:0}},
+    {nm:'Kerze',    v:{r:200,g:60,b:0,cw:0,ww:255,uv:0}},
+    {nm:'Feuer',    v:{r:255,g:40,b:0,cw:0,ww:100,uv:0}},
+    {nm:'Sahara',   v:{r:255,g:160,b:20,cw:0,ww:200,uv:0}},
+    {nm:'Kupfer',   v:{r:200,g:80,b:10,cw:0,ww:180,uv:0}},
+    {nm:'Sonnenunt.',v:{r:255,g:60,b:0,cw:0,ww:160,uv:0}},
+    {nm:'Herbst',   v:{r:220,g:100,b:0,cw:0,ww:140,uv:0}},
+  ],
+  pgPastel:[
+    {nm:'Babyrosa', v:{r:200,g:80,b:120,cw:60,ww:40,uv:0}},
+    {nm:'Mintgrün', v:{r:20,g:180,b:100,cw:80,ww:0,uv:0}},
+    {nm:'Lavendel', v:{r:120,g:60,b:200,cw:40,ww:0,uv:30}},
+    {nm:'Pfirsich', v:{r:255,g:160,b:80,cw:0,ww:80,uv:0}},
+    {nm:'Eisblau',  v:{r:40,g:100,b:220,cw:100,ww:0,uv:0}},
+    {nm:'Lila-Rosa',v:{r:200,g:50,b:180,cw:30,ww:0,uv:20}},
+    {nm:'Pastellgelb',v:{r:240,g:220,b:60,cw:40,ww:60,uv:0}},
+    {nm:'Minteis',  v:{r:60,g:200,b:180,cw:80,ww:0,uv:0}},
+  ],
+  pgStage:[
+    {nm:'Bühne Tag',v:{r:0,g:0,b:0,cw:220,ww:180,uv:0}},
+    {nm:'Spot Warm',v:{r:40,g:0,b:0,cw:60,ww:240,uv:0}},
+    {nm:'Spot Kalt',v:{r:0,g:0,b:20,cw:255,ww:40,uv:0}},
+    {nm:'Drama Rot',v:{r:255,g:0,b:0,cw:0,ww:60,uv:0}},
+    {nm:'Drama Blau',v:{r:0,g:0,b:255,cw:40,ww:0,uv:0}},
+    {nm:'Theater',  v:{r:240,g:130,b:0,cw:0,ww:180,uv:0}},
+    {nm:'Oper',     v:{r:160,g:0,b:70,cw:0,ww:80,uv:20}},
+    {nm:'Musical',  v:{r:240,g:70,b:0,cw:40,ww:140,uv:0}},
+    {nm:'Noir',     v:{r:25,g:0,b:70,cw:0,ww:0,uv:60}},
+    {nm:'Thriller', v:{r:0,g:70,b:0,cw:0,ww:0,uv:30}},
+    {nm:'Requiem',  v:{r:70,g:0,b:0,cw:0,ww:30,uv:70}},
+    {nm:'Fanfare',  v:{r:240,g:190,b:0,cw:40,ww:180,uv:0}},
+  ],
+  pgClub:[
+    {nm:'Club UV',  v:{r:15,g:0,b:30,cw:0,ww:0,uv:255}},
+    {nm:'Neon Pink',v:{r:240,g:0,b:100,cw:0,ww:0,uv:60}},
+    {nm:'Acid Green',v:{r:15,g:240,b:0,cw:0,ww:0,uv:0}},
+    {nm:'Rave Blue',v:{r:0,g:0,b:240,cw:0,ww:0,uv:80}},
+    {nm:'Lila Neon',v:{r:140,g:0,b:240,cw:0,ww:0,uv:120}},
+    {nm:'Teal Club',v:{r:0,g:200,b:180,cw:0,ww:0,uv:30}},
+    {nm:'Hot Red',  v:{r:255,g:0,b:0,cw:0,ww:0,uv:0}},
+    {nm:'Strobo WW',v:{r:0,g:0,b:0,cw:200,ww:240,uv:0}},
+  ],
+  pgUV:[
+    {nm:'UV Pur',   v:{r:0,g:0,b:0,cw:0,ww:0,uv:255}},
+    {nm:'UV+Violett',v:{r:50,g:0,b:80,cw:0,ww:0,uv:255}},
+    {nm:'UV+Blau',  v:{r:0,g:0,b:60,cw:0,ww:0,uv:200}},
+    {nm:'UV-Glow',  v:{r:70,g:0,b:160,cw:0,ww:0,uv:160}},
+    {nm:'UV-Ghost', v:{r:0,g:15,b:30,cw:20,ww:0,uv:180}},
+    {nm:'UV-Pink',  v:{r:90,g:0,b:50,cw:0,ww:0,uv:220}},
+    {nm:'UV-Dunkel',v:{r:0,g:0,b:0,cw:0,ww:0,uv:80}},
+    {nm:'UV-Weiss', v:{r:0,g:0,b:0,cw:30,ww:0,uv:255}},
+  ],
+  pgMood:[
+    {nm:'Romantik', v:{r:200,g:0,b:50,cw:0,ww:100,uv:0}},
+    {nm:'Kamin',    v:{r:240,g:45,b:0,cw:0,ww:180,uv:0}},
+    {nm:'Meditation',v:{r:70,g:0,b:160,cw:0,ww:15,uv:60}},
+    {nm:'Aquarium', v:{r:0,g:70,b:240,cw:60,ww:0,uv:20}},
+    {nm:'Dschungel',v:{r:0,g:180,b:0,cw:0,ww:30,uv:0}},
+    {nm:'Sonnenauf.',v:{r:240,g:90,b:0,cw:60,ww:160,uv:0}},
+    {nm:'Tiefmeer', v:{r:0,g:15,b:180,cw:40,ww:0,uv:60}},
+    {nm:'Polarlicht',v:{r:0,g:240,b:100,cw:0,ww:0,uv:80}},
+    {nm:'Lagerfeuer',v:{r:240,g:60,b:0,cw:0,ww:240,uv:0}},
+    {nm:'Morgenröte',v:{r:240,g:110,b:50,cw:40,ww:140,uv:0}},
+    {nm:'Nebel',    v:{r:90,g:90,b:130,cw:90,ww:50,uv:0}},
+    {nm:'Nachthimm.',v:{r:0,g:0,b:100,cw:0,ww:0,uv:40}},
+  ],
+};
+
+function buildPresets() {
+  Object.entries(PRESET_GROUPS).forEach(([gid,presets]) => {
+    const grid = document.getElementById(gid);
+    if(!grid) return;
+    grid.innerHTML = '';
+    presets.forEach(p => {
+      const {R,G,B} = computeRGB(p.v, 100);
+      const btn = document.createElement('div');
+      btn.className = 'pb';
+      btn.style.background = `rgb(${R},${G},${B})`;
+      const lum = 0.299*R + 0.587*G + 0.114*B;
+      btn.innerHTML = `<div class="pb-lbl" style="color:${lum>110?'rgba(0,0,0,.85)':'rgba(255,255,255,.95)'}">${p.nm}</div>`;
+      btn.addEventListener('click', () => { setAll(p.v); toast(p.nm+' geladen'); });
+      grid.appendChild(btn);
+    });
+  });
+}
+
+// ══════════════════════════════════════════════
+//  SAVE / LOAD
+// ══════════════════════════════════════════════
+function openSaveMo() {
+  document.getElementById('colorName').value = '';
+  document.getElementById('saveMo').classList.add('on');
+  setTimeout(()=>document.getElementById('colorName').focus(), 150);
+}
+function closeMo(){ document.getElementById('saveMo').classList.remove('on'); }
+
+function doSave() {
+  const nm = document.getElementById('colorName').value.trim() || 'Unbenannt';
+  const {R,G,B} = computeRGB(V);
+  saved.push({nm, v:{...V}, master, rgb:{R,G,B}, ts:Date.now()});
+  persist();
+  closeMo();
+  toast('♡ „'+nm+'" gespeichert!');
+  renderSaved();
+}
+function persist(){ localStorage.setItem('sh6_v3', JSON.stringify(saved)); }
+
+function clearAll(){
+  if(!saved.length) return;
+  saved=[]; persist(); renderSaved(); toast('Alle gelöscht');
+}
+
+function renderSaved(){
+  const grid  = document.getElementById('savedGrid');
+  const empty = document.getElementById('emptyState');
+  grid.innerHTML = '';
+  if(!saved.length){ empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  saved.forEach((c,i) => {
+    const card = document.createElement('div');
+    card.className = 'sc';
+    card.innerHTML = `
+      <div class="sc-sw" style="background:rgb(${c.rgb.R},${c.rgb.G},${c.rgb.B})"></div>
+      <div class="sc-body">
+        <div class="sc-nm">${c.nm}</div>
+        <div class="sc-cd">R${c.rgb.R} G${c.rgb.G} B${c.rgb.B}</div>
+        <div class="sc-acts">
+          <div class="mbt" onclick="loadSaved(${i})">LADEN</div>
+          <div class="mbt r" onclick="delSaved(${i})">✕</div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function loadSaved(i){
+  const c = saved[i];
+  setAll(c.v);
+  master = c.master; mSl.value = master;
+  document.getElementById('masterPct').textContent = master+'%';
+  mSl.style.background = `linear-gradient(to right,var(--acc) 0%,var(--acc) ${master}%,#252540 ${master}%)`;
+  updateAll();
+  document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('on'));
+  document.querySelectorAll('.icon-btn').forEach(b=>b.classList.remove('active'));
+  gotoMixer();
+  toast('„'+c.nm+'" geladen');
+}
+function delSaved(i){ saved.splice(i,1); persist(); renderSaved(); }
+
+// ══════════════════════════════════════════════
+//  SETTINGS CONTROLS
+// ══════════════════════════════════════════════
+const mixKeys = ['cwR','cwG','cwB','wwR','wwG','wwB','uvR','uvG','uvB'];
+mixKeys.forEach(k => {
+  document.getElementById(k).addEventListener('input', function(){
+    MIX[k] = +this.value/100;
+    document.getElementById(k+'v').textContent = this.value+'%';
+    updateAll();
+    buildPresets();
+  });
+});
+
+document.querySelectorAll('#dmxFmtToggle .sg-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#dmxFmtToggle .sg-opt').forEach(o=>o.classList.remove('on'));
+    opt.classList.add('on');
+    dmxFmt = opt.dataset.fmt;
+    updateAll();
+  });
+});
+
+function resetMix(){
+  MIX = {cwR:.78,cwG:.86,cwB:1.00,wwR:1.00,wwG:.64,wwB:.28,uvR:.10,uvG:.00,uvB:.55};
+  mixKeys.forEach(k=>{
+    document.getElementById(k).value = Math.round(MIX[k]*100);
+    document.getElementById(k+'v').textContent = Math.round(MIX[k]*100)+'%';
+  });
+  updateAll(); buildPresets();
+  toast('Zurückgesetzt');
+}
+
+// ── TOAST ────────────────────────────────────────
+let ttimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(ttimer);
+  ttimer=setTimeout(()=>t.classList.remove('on'),2200);
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+buildChs();
+buildPresets();
+updateAll();
+updatePalPreview();
+renderSaved();
+mSl.style.background = 'linear-gradient(to right,var(--acc) 0%,var(--acc) 100%,#252540 100%)';
+// Init RGB slider background
+document.getElementById('palRGB').style.background = 'linear-gradient(to right,#252540,#ffffff)';
+// Hide install banner if already running as standalone PWA
+if(window.navigator.standalone === true ||
+   window.matchMedia('(display-mode: standalone)').matches) {
+  document.getElementById('installBanner').style.display = 'none';
+}
+</script>
+</body>
+</html>
