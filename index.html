@@ -679,8 +679,7 @@ function drawXY() {
   const imgd = xyCtx.createImageData(W, W);
 
   // Compute the CW/WW/UV tint colour that gets blended in if enabled
-  const cwAmt = Math.round(palWAmt * (1 - palWB/100));
-  const wwAmt = Math.round(palWAmt * (palWB/100));
+  const {cw: cwAmt, ww: wwAmt} = wbToCwWw(palWB, palWAmt);
   // tint RGB contribution from white/UV channels at full RGB (scale factor applied per pixel)
   const tR = MIX.cwR*cwAmt + MIX.wwR*wwAmt + MIX.uvR*palUVval;
   const tG = MIX.cwG*cwAmt + MIX.wwG*wwAmt + MIX.uvG*palUVval;
@@ -803,36 +802,46 @@ palUVSl.addEventListener('input',()=>{ palUVval=+palUVSl.value; palUVN.value=pal
   const p=(palUVval/255)*100; palUVSl.style.background=`linear-gradient(to right,#252540,#a040ff ${p}%,#252540 ${p}%)`; drawXY(); updatePalPreview(); });
 palUVN.addEventListener('input', ()=>{ palUVval=clamp(+palUVN.value||0); palUVSl.value=palUVval; drawXY(); updatePalPreview(); });
 
+// CW/WW balance helper: palWB 0=full CW, 50=both full, 100=full WW
+// Uses equal-power crossfade: each channel peaks at 255 at its end, both 255 at center
+function wbToCwWw(wb, amt) {
+  // wb: 0–100, amt: 0–255
+  // cwFactor: 1.0 at wb=0, 1.0 at wb=50, 0.0 at wb=100
+  // wwFactor: 0.0 at wb=0, 1.0 at wb=50, 1.0 at wb=100
+  const cwF = wb <= 50 ? 1.0 : 1.0 - (wb-50)/50;
+  const wwF = wb >= 50 ? 1.0 : wb/50;
+  return {
+    cw: Math.round(amt * cwF),
+    ww: Math.round(amt * wwF),
+  };
+}
+
 function updatePalPreview() {
-  // Get base colour from HSL
   const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
-  // Scale by RGB strength
-  const R = Math.round(rr * (palRGBamt/255));
-  const G = Math.round(gg * (palRGBamt/255));
-  const B = Math.round(bb * (palRGBamt/255));
-  const cwAmt   = Math.round(palWAmt * (1-palWB/100));
-  const wwAmt   = Math.round(palWAmt * (palWB/100));
-  const pv = {r:R, g:G, b:B, cw:cwAmt, ww:wwAmt, uv:palUVval};
+  const r = Math.round(rr * (palRGBamt/255));
+  const g = Math.round(gg * (palRGBamt/255));
+  const b = Math.round(bb * (palRGBamt/255));
+  const {cw, ww} = wbToCwWw(palWB, palWAmt);
+  const pv = {r, g, b, cw, ww, uv:palUVval};
   const {R:PR,G:PG,B:PB} = computeRGB(pv, 100);
   const rgb = `rgb(${PR},${PG},${PB})`;
   document.getElementById('palOrb').style.background = rgb;
   document.getElementById('palOrb').style.boxShadow  = `0 0 20px 6px rgba(${PR},${PG},${PB},.5)`;
   document.getElementById('palVals').innerHTML =
-    `<b>${rgb}</b><br>r:${R} g:${G} b:${B}<br>cw:${cwAmt}  ww:${wwAmt}  uv:${palUVval}`;
+    `<b>${rgb}</b><br>r:${r} g:${g} b:${b}<br>cw:${cw}  ww:${ww}  uv:${palUVval}`;
 }
 
 function applyPalette() {
   const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
-  const R = Math.round(rr * (palRGBamt/255));
-  const G = Math.round(gg * (palRGBamt/255));
-  const B = Math.round(bb * (palRGBamt/255));
-  const cwAmt   = Math.round(palWAmt * (1-palWB/100));
-  const wwAmt   = Math.round(palWAmt * (palWB/100));
-  setAll({r:R, g:G, b:B, cw:cwAmt, ww:wwAmt, uv:palUVval});
+  const r = Math.round(rr * (palRGBamt/255));
+  const g = Math.round(gg * (palRGBamt/255));
+  const b = Math.round(bb * (palRGBamt/255));
+  const {cw, ww} = wbToCwWw(palWB, palWAmt);
+  setAll({r, g, b, cw, ww, uv:palUVval});
   gotoMixer();
   toast('Farbe übernommen');
 }
-
+  
 // ══════════════════════════════════════════════
 //  PRESETS — fully curated per category
 // ══════════════════════════════════════════════
@@ -844,8 +853,8 @@ const PRESET_GROUPS = {
     {nm:'Blau',       v:{r:0,  g:0,  b:255,cw:0,  ww:0,  uv:0}},
     {nm:'Cyan',       v:{r:0,  g:255,b:255,cw:0,  ww:0,  uv:0}},
     {nm:'Magenta',    v:{r:255,g:0,  b:255,cw:0,  ww:0,  uv:0}},
-    {nm:'Gelb',       v:{r:255,g:200,b:0,  cw:0,  ww:0,  uv:0}},
-    {nm:'Orange',     v:{r:255,g:70, b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Gelb',       v:{r:255,g:255,b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Weiss',     v:{r:255,g:255, b:255,  cw:0,  ww:0,  uv:0}},
     {nm:'Violett',    v:{r:100,g:0,  b:220,cw:0,  ww:0,  uv:0}},
   ],
   // Pure white channels only — no RGB, no UV
@@ -945,6 +954,21 @@ function buildPresets() {
 // ══════════════════════════════════════════════
 //  SAVE / LOAD
 // ══════════════════════════════════════════════
+
+// Helper: get current "active" values — from palette if on that tab, else from mixer V
+function currentVals() {
+  const activeTab = document.querySelector('.tab.on')?.dataset.p;
+  if (activeTab === 'palette') {
+    const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
+    const r = Math.round(rr * (palRGBamt/255));
+    const g = Math.round(gg * (palRGBamt/255));
+    const b = Math.round(bb * (palRGBamt/255));
+    const {cw, ww} = wbToCwWw(palWB, palWAmt);
+    return {r, g, b, cw, ww, uv: palUVval};
+  }
+  return {...V};
+}
+
 function openSaveMo() {
   document.getElementById('colorName').value = '';
   document.getElementById('saveMo').classList.add('on');
@@ -954,8 +978,9 @@ function closeMo(){ document.getElementById('saveMo').classList.remove('on'); }
 
 function doSave() {
   const nm = document.getElementById('colorName').value.trim() || 'Unbenannt';
-  const {R,G,B} = computeRGB(V);
-  saved.push({nm, v:{...V}, master, rgb:{R,G,B}, ts:Date.now()});
+  const cv = currentVals();
+  const {R,G,B} = computeRGB(cv, 100);
+  saved.push({nm, v:cv, master, rgb:{R,G,B}, ts:Date.now()});
   persist();
   closeMo();
   toast('♡ „'+nm+'" gespeichert!');
