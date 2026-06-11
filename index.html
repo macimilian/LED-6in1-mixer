@@ -421,36 +421,42 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
       <div class="sg-note" style="margin-bottom:10px">
         Wie wirken CW, WW und UV auf die RGB-Vorschau?
         Die Werte bestimmen den RGB-Anteil jedes Kanals.
-        Kalt Weiß 7500K ≈ bläulich, Warm Weiß 3200K ≈ amber, UV 395nm ≈ lila.
+        Kalt Weiß 7500K ≈ bläulich, Warm Weiß 3200K ≈ amber, UV 395nm ≈ hell-lila.
       </div>
-      <div class="sg-row"><div class="sg-lbl">CW → Rot</div>
+      
+      <div style="font-size:9px;font-weight:800;color:#c8e0ff;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #252540">KALT WEISS (CW)</div>
+      <div class="sg-row"><div class="sg-lbl">→ Rot</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="cwR" min="0" max="100" value="78"></div>
         <div class="sg-val" id="cwRv">78%</div></div>
-      <div class="sg-row"><div class="sg-lbl">CW → Grün</div>
+      <div class="sg-row"><div class="sg-lbl">→ Grün</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="cwG" min="0" max="100" value="86"></div>
         <div class="sg-val" id="cwGv">86%</div></div>
-      <div class="sg-row"><div class="sg-lbl">CW → Blau</div>
+      <div class="sg-row" style="margin-bottom:12px"><div class="sg-lbl">→ Blau</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="cwB" min="0" max="100" value="100"></div>
         <div class="sg-val" id="cwBv">100%</div></div>
-      <div class="sg-row"><div class="sg-lbl">WW → Rot</div>
+
+      <div style="font-size:9px;font-weight:800;color:#ffaa33;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #252540">WARM WEISS (WW)</div>
+      <div class="sg-row"><div class="sg-lbl">→ Rot</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="wwR" min="0" max="100" value="100"></div>
         <div class="sg-val" id="wwRv">100%</div></div>
-      <div class="sg-row"><div class="sg-lbl">WW → Grün</div>
+      <div class="sg-row"><div class="sg-lbl">→ Grün</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="wwG" min="0" max="100" value="64"></div>
         <div class="sg-val" id="wwGv">64%</div></div>
-      <div class="sg-row"><div class="sg-lbl">WW → Blau</div>
+      <div class="sg-row" style="margin-bottom:12px"><div class="sg-lbl">→ Blau</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="wwB" min="0" max="100" value="28"></div>
         <div class="sg-val" id="wwBv">28%</div></div>
-      <div class="sg-row"><div class="sg-lbl">UV → Rot</div>
-        <div class="sl-wrap" style="flex:1"><input type="range" id="uvR" min="0" max="100" value="10"></div>
-        <div class="sg-val" id="uvRv">10%</div></div>
-      <div class="sg-row"><div class="sg-lbl">UV → Grün</div>
+
+      <div style="font-size:9px;font-weight:800;color:#a040ff;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #252540">UV (395nm)</div>
+      <div class="sg-row"><div class="sg-lbl">→ Rot</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvR" min="0" max="100" value="35"></div>
+        <div class="sg-val" id="uvRv">35%</div></div>
+      <div class="sg-row"><div class="sg-lbl">→ Grün</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="uvG" min="0" max="100" value="0"></div>
         <div class="sg-val" id="uvGv">0%</div></div>
-      <div class="sg-row"><div class="sg-lbl">UV → Blau</div>
-        <div class="sl-wrap" style="flex:1"><input type="range" id="uvB" min="0" max="100" value="55"></div>
-        <div class="sg-val" id="uvBv">55%</div></div>
-      <button class="btn btn-out" style="width:100%;margin-top:4px" onclick="resetMix()">↺ Standard wiederherstellen</button>
+      <div class="sg-row"><div class="sg-lbl">→ Blau</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvB" min="0" max="100" value="65"></div>
+        <div class="sg-val" id="uvBv">65%</div></div>
+      <button class="btn btn-out" style="width:100%;margin-top:8px" onclick="resetMix()">↺ Standard wiederherstellen</button>
     </div>
 
     <div class="setting-group">
@@ -491,7 +497,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 // ══════════════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════════════
-let MIX = { cwR:.78,cwG:.86,cwB:1.00, wwR:1.00,wwG:.64,wwB:.28, uvR:.10,uvG:.00,uvB:.55 };
+let MIX = { cwR:.78,cwG:.86,cwB:1.00, wwR:1.00,wwG:.64,wwB:.28, uvR:.35,uvG:.00,uvB:.65 };
 let dmxFmt = 'short';
 
 const CHS = [
@@ -533,6 +539,14 @@ function computeRGB(v, m) {
     const scale = 255 / maxCh;
     R *= scale; G *= scale; B *= scale;
   }
+
+  // Step 3: apply master dimmer
+  return {
+    R: Math.round(R * f),
+    G: Math.round(G * f),
+    B: Math.round(B * f),
+  };
+}
 
   // Step 3: apply master dimmer
   return {
@@ -820,107 +834,103 @@ function updatePalPreview() {
 
 function applyPalette() {
   const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
-  const R = Math.round(rr * (palRGBamt/255));
-  const G = Math.round(gg * (palRGBamt/255));
-  const B = Math.round(bb * (palRGBamt/255));
-  const cwAmt   = Math.round(palWAmt * (1-palWB/100));
-  const wwAmt   = Math.round(palWAmt * (palWB/100));
-  setAll({r:R, g:G, b:B, cw:cwAmt, ww:wwAmt, uv:palUVval});
+  const r = Math.round(rr * (palRGBamt/255));
+  const g = Math.round(gg * (palRGBamt/255));
+  const b = Math.round(bb * (palRGBamt/255));
+  const {cw, ww} = wbToCwWw(palWB, palWAmt);
+  setAll({r, g, b, cw, ww, uv:palUVval});
   gotoMixer();
   toast('Farbe übernommen');
 }
 
 // ══════════════════════════════════════════════
-//  PRESETS
+//  PRESETS — fully curated per category
 // ══════════════════════════════════════════════
 const PRESET_GROUPS = {
+  // Pure RGB primary & secondary — no white, no UV
   pgBasic:[
-    {nm:'Rot',      v:{r:255,g:0,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Grün',     v:{r:0,g:255,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Blau',     v:{r:0,g:0,b:255,cw:0,ww:0,uv:0}},
-    {nm:'Cyan',     v:{r:0,g:255,b:255,cw:0,ww:0,uv:0}},
-    {nm:'Magenta',  v:{r:255,g:0,b:255,cw:0,ww:0,uv:0}},
-    {nm:'Gelb',     v:{r:255,g:220,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Orange',   v:{r:255,g:80,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Violett',  v:{r:130,g:0,b:200,cw:0,ww:0,uv:0}},
+    {nm:'Rot',        v:{r:255,g:0,  b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Grün',       v:{r:0,  g:255,b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Blau',       v:{r:0,  g:0,  b:255,cw:0,  ww:0,  uv:0}},
+    {nm:'Cyan',       v:{r:0,  g:255,b:255,cw:0,  ww:0,  uv:0}},
+    {nm:'Magenta',    v:{r:255,g:0,  b:255,cw:0,  ww:0,  uv:0}},
+    {nm:'Gelb',       v:{r:255,g:200,b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Orange',     v:{r:255,g:70, b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Violett',    v:{r:100,g:0,  b:220,cw:0,  ww:0,  uv:0}},
   ],
+  // Pure white channels only — no RGB, no UV
   pgWhite:[
-    {nm:'Kalt WW',  v:{r:0,g:0,b:0,cw:255,ww:0,uv:0}},
-    {nm:'Neutral',  v:{r:0,g:0,b:0,cw:160,ww:140,uv:0}},
-    {nm:'Warm WW',  v:{r:0,g:0,b:0,cw:0,ww:255,uv:0}},
-    {nm:'Tageslicht',v:{r:0,g:10,b:40,cw:255,ww:60,uv:0}},
-    {nm:'Mondlicht',v:{r:0,g:0,b:30,cw:200,ww:0,uv:20}},
-    {nm:'Studio',   v:{r:0,g:0,b:0,cw:220,ww:100,uv:0}},
-    {nm:'Büro',     v:{r:0,g:0,b:0,cw:255,ww:30,uv:0}},
-    {nm:'Gemütlich',v:{r:20,g:0,b:0,cw:40,ww:220,uv:0}},
+    {nm:'CW 100%',    v:{r:0,g:0,b:0,cw:255,ww:0,  uv:0}},
+    {nm:'CW 50%',     v:{r:0,g:0,b:0,cw:128,ww:0,  uv:0}},
+    {nm:'WW 100%',    v:{r:0,g:0,b:0,cw:0,  ww:255,uv:0}},
+    {nm:'WW 50%',     v:{r:0,g:0,b:0,cw:0,  ww:128,uv:0}},
+    {nm:'CW+WW 100%', v:{r:0,g:0,b:0,cw:255,ww:255,uv:0}},
+    {nm:'Neutral',    v:{r:0,g:0,b:0,cw:180,ww:160,uv:0}},
+    {nm:'Tageslicht', v:{r:0,g:0,b:0,cw:255,ww:60, uv:0}},
+    {nm:'Studiospot', v:{r:0,g:0,b:0,cw:220,ww:100,uv:0}},
   ],
+  // Warm amber — WW + RGB orange/red
   pgAmber:[
-    {nm:'Bernstein',v:{r:255,g:120,b:0,cw:0,ww:180,uv:0}},
-    {nm:'Gold',     v:{r:255,g:190,b:0,cw:0,ww:140,uv:0}},
-    {nm:'Kerze',    v:{r:200,g:60,b:0,cw:0,ww:255,uv:0}},
-    {nm:'Feuer',    v:{r:255,g:40,b:0,cw:0,ww:100,uv:0}},
-    {nm:'Sahara',   v:{r:255,g:160,b:20,cw:0,ww:200,uv:0}},
-    {nm:'Kupfer',   v:{r:200,g:80,b:10,cw:0,ww:180,uv:0}},
-    {nm:'Sonnenunt.',v:{r:255,g:60,b:0,cw:0,ww:160,uv:0}},
-    {nm:'Herbst',   v:{r:220,g:100,b:0,cw:0,ww:140,uv:0}},
+    {nm:'Gold',       v:{r:255,g:180,b:0,  cw:0,ww:200,uv:0}},
+    {nm:'Bernstein',  v:{r:255,g:110,b:0,  cw:0,ww:180,uv:0}},
+    {nm:'Sonnenunt.', v:{r:255,g:50, b:0,  cw:0,ww:140,uv:0}},
+    {nm:'Feuer',      v:{r:255,g:30, b:0,  cw:0,ww:80, uv:0}},
+    {nm:'Kerze',      v:{r:180,g:40, b:0,  cw:0,ww:255,uv:0}},
+    {nm:'Kupfer',     v:{r:200,g:70, b:0,  cw:0,ww:160,uv:0}},
+    {nm:'Sahara',     v:{r:255,g:150,b:10, cw:0,ww:220,uv:0}},
+    {nm:'Herbstrot',  v:{r:220,g:80, b:0,  cw:0,ww:120,uv:0}},
   ],
+  // Soft pastel — desaturated with CW
   pgPastel:[
-    {nm:'Babyrosa', v:{r:200,g:80,b:120,cw:60,ww:40,uv:0}},
-    {nm:'Mintgrün', v:{r:20,g:180,b:100,cw:80,ww:0,uv:0}},
-    {nm:'Lavendel', v:{r:120,g:60,b:200,cw:40,ww:0,uv:30}},
-    {nm:'Pfirsich', v:{r:255,g:160,b:80,cw:0,ww:80,uv:0}},
-    {nm:'Eisblau',  v:{r:40,g:100,b:220,cw:100,ww:0,uv:0}},
-    {nm:'Lila-Rosa',v:{r:200,g:50,b:180,cw:30,ww:0,uv:20}},
-    {nm:'Pastellgelb',v:{r:240,g:220,b:60,cw:40,ww:60,uv:0}},
-    {nm:'Minteis',  v:{r:60,g:200,b:180,cw:80,ww:0,uv:0}},
+    {nm:'Babyrosa',   v:{r:220,g:80, b:120,cw:80, ww:30, uv:0}},
+    {nm:'Pfirsich',   v:{r:255,g:150,b:70, cw:0,  ww:100,uv:0}},
+    {nm:'Lavendel',   v:{r:140,g:60, b:210,cw:60, ww:0,  uv:0}},
+    {nm:'Mintgrün',   v:{r:20, g:200,b:110,cw:80, ww:0,  uv:0}},
+    {nm:'Eisblau',    v:{r:30, g:100,b:230,cw:100,ww:0,  uv:0}},
+    {nm:'Flieder',    v:{r:180,g:80, b:200,cw:50, ww:0,  uv:0}},
+    {nm:'Pastellgelb',v:{r:240,g:210,b:50, cw:40, ww:60, uv:0}},
+    {nm:'Minteis',    v:{r:40, g:200,b:180,cw:90, ww:0,  uv:0}},
   ],
+  // Stage & theatre — spots, dramatic colours
   pgStage:[
-    {nm:'Bühne Tag',v:{r:0,g:0,b:0,cw:220,ww:180,uv:0}},
-    {nm:'Spot Warm',v:{r:40,g:0,b:0,cw:60,ww:240,uv:0}},
-    {nm:'Spot Kalt',v:{r:0,g:0,b:20,cw:255,ww:40,uv:0}},
-    {nm:'Drama Rot',v:{r:255,g:0,b:0,cw:0,ww:60,uv:0}},
-    {nm:'Drama Blau',v:{r:0,g:0,b:255,cw:40,ww:0,uv:0}},
-    {nm:'Theater',  v:{r:240,g:130,b:0,cw:0,ww:180,uv:0}},
-    {nm:'Oper',     v:{r:160,g:0,b:70,cw:0,ww:80,uv:20}},
-    {nm:'Musical',  v:{r:240,g:70,b:0,cw:40,ww:140,uv:0}},
-    {nm:'Noir',     v:{r:25,g:0,b:70,cw:0,ww:0,uv:60}},
-    {nm:'Thriller', v:{r:0,g:70,b:0,cw:0,ww:0,uv:30}},
-    {nm:'Requiem',  v:{r:70,g:0,b:0,cw:0,ww:30,uv:70}},
-    {nm:'Fanfare',  v:{r:240,g:190,b:0,cw:40,ww:180,uv:0}},
+    {nm:'Spot WW',    v:{r:0,  g:0,  b:0,  cw:80, ww:255,uv:0}},
+    {nm:'Spot CW',    v:{r:0,  g:0,  b:0,  cw:255,ww:60, uv:0}},
+    {nm:'Spot Natur', v:{r:0,  g:0,  b:0,  cw:200,ww:200,uv:0}},
+    {nm:'Amber Spot', v:{r:240,g:120,b:0,  cw:0,  ww:200,uv:0}},
+    {nm:'Drama Rot',  v:{r:255,g:0,  b:0,  cw:0,  ww:60, uv:0}},
+    {nm:'Drama Blau', v:{r:0,  g:0,  b:255,cw:40, ww:0,  uv:0}},
+    {nm:'Oper Lila',  v:{r:160,g:0,  b:80, cw:0,  ww:60, uv:30}},
+    {nm:'Musical',    v:{r:240,g:60, b:0,  cw:40, ww:160,uv:0}},
+    {nm:'Fanfare',    v:{r:240,g:180,b:0,  cw:60, ww:180,uv:0}},
+    {nm:'Noir',       v:{r:20, g:0,  b:60, cw:0,  ww:0,  uv:60}},
+    {nm:'Thriller',   v:{r:0,  g:80, b:0,  cw:0,  ww:0,  uv:20}},
+    {nm:'Requiem',    v:{r:80, g:0,  b:0,  cw:0,  ww:20, uv:80}},
   ],
+  // Club & party — saturated, neon, UV
   pgClub:[
-    {nm:'Club UV',  v:{r:15,g:0,b:30,cw:0,ww:0,uv:255}},
-    {nm:'Neon Pink',v:{r:240,g:0,b:100,cw:0,ww:0,uv:60}},
-    {nm:'Acid Green',v:{r:15,g:240,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Rave Blue',v:{r:0,g:0,b:240,cw:0,ww:0,uv:80}},
-    {nm:'Lila Neon',v:{r:140,g:0,b:240,cw:0,ww:0,uv:120}},
-    {nm:'Teal Club',v:{r:0,g:200,b:180,cw:0,ww:0,uv:30}},
-    {nm:'Hot Red',  v:{r:255,g:0,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Strobo WW',v:{r:0,g:0,b:0,cw:200,ww:240,uv:0}},
+    {nm:'UV Pur',     v:{r:0,  g:0,  b:0,  cw:0,ww:0,uv:255}},
+    {nm:'UV Lila',    v:{r:60, g:0,  b:100,cw:0,ww:0,uv:255}},
+    {nm:'UV Pink',    v:{r:100,g:0,  b:60, cw:0,ww:0,uv:220}},
+    {nm:'UV Blau',    v:{r:0,  g:0,  b:80, cw:0,ww:0,uv:200}},
+    {nm:'Neon Pink',  v:{r:255,g:0,  b:120,cw:0,ww:0,uv:40}},
+    {nm:'Acid Green', v:{r:10, g:255,b:0,  cw:0,ww:0,uv:0}},
+    {nm:'Neon Blau',  v:{r:0,  g:0,  b:255,cw:0,ww:0,uv:60}},
+    {nm:'Neon Lila',  v:{r:140,g:0,  b:255,cw:0,ww:0,uv:100}},
   ],
-  pgUV:[
-    {nm:'UV Pur',   v:{r:0,g:0,b:0,cw:0,ww:0,uv:255}},
-    {nm:'UV+Violett',v:{r:50,g:0,b:80,cw:0,ww:0,uv:255}},
-    {nm:'UV+Blau',  v:{r:0,g:0,b:60,cw:0,ww:0,uv:200}},
-    {nm:'UV-Glow',  v:{r:70,g:0,b:160,cw:0,ww:0,uv:160}},
-    {nm:'UV-Ghost', v:{r:0,g:15,b:30,cw:20,ww:0,uv:180}},
-    {nm:'UV-Pink',  v:{r:90,g:0,b:50,cw:0,ww:0,uv:220}},
-    {nm:'UV-Dunkel',v:{r:0,g:0,b:0,cw:0,ww:0,uv:80}},
-    {nm:'UV-Weiss', v:{r:0,g:0,b:0,cw:30,ww:0,uv:255}},
-  ],
+  // Mood & atmosphere
   pgMood:[
-    {nm:'Romantik', v:{r:200,g:0,b:50,cw:0,ww:100,uv:0}},
-    {nm:'Kamin',    v:{r:240,g:45,b:0,cw:0,ww:180,uv:0}},
-    {nm:'Meditation',v:{r:70,g:0,b:160,cw:0,ww:15,uv:60}},
-    {nm:'Aquarium', v:{r:0,g:70,b:240,cw:60,ww:0,uv:20}},
-    {nm:'Dschungel',v:{r:0,g:180,b:0,cw:0,ww:30,uv:0}},
-    {nm:'Sonnenauf.',v:{r:240,g:90,b:0,cw:60,ww:160,uv:0}},
-    {nm:'Tiefmeer', v:{r:0,g:15,b:180,cw:40,ww:0,uv:60}},
-    {nm:'Polarlicht',v:{r:0,g:240,b:100,cw:0,ww:0,uv:80}},
-    {nm:'Lagerfeuer',v:{r:240,g:60,b:0,cw:0,ww:240,uv:0}},
-    {nm:'Morgenröte',v:{r:240,g:110,b:50,cw:40,ww:140,uv:0}},
-    {nm:'Nebel',    v:{r:90,g:90,b:130,cw:90,ww:50,uv:0}},
-    {nm:'Nachthimm.',v:{r:0,g:0,b:100,cw:0,ww:0,uv:40}},
+    {nm:'Kamin',      v:{r:240,g:40, b:0,  cw:0,  ww:200,uv:0}},
+    {nm:'Romantik',   v:{r:200,g:0,  b:50, cw:0,  ww:80, uv:0}},
+    {nm:'Sonnenauf.', v:{r:240,g:80, b:0,  cw:60, ww:180,uv:0}},
+    {nm:'Morgenröte', v:{r:255,g:100,b:40, cw:40, ww:160,uv:0}},
+    {nm:'Aquarium',   v:{r:0,  g:80, b:240,cw:60, ww:0,  uv:15}},
+    {nm:'Tiefmeer',   v:{r:0,  g:10, b:190,cw:40, ww:0,  uv:50}},
+    {nm:'Polarlicht', v:{r:0,  g:230,b:100,cw:0,  ww:0,  uv:70}},
+    {nm:'Dschungel',  v:{r:0,  g:190,b:0,  cw:0,  ww:30, uv:0}},
+    {nm:'Meditation', v:{r:60, g:0,  b:160,cw:0,  ww:10, uv:60}},
+    {nm:'Mondlicht',  v:{r:0,  g:0,  b:30, cw:200,ww:0,  uv:20}},
+    {nm:'Nebel',      v:{r:80, g:90, b:140,cw:100,ww:40, uv:0}},
+    {nm:'Nachthimm.', v:{r:0,  g:0,  b:120,cw:0,  ww:0,  uv:40}},
   ],
 };
 
@@ -945,6 +955,21 @@ function buildPresets() {
 // ══════════════════════════════════════════════
 //  SAVE / LOAD
 // ══════════════════════════════════════════════
+
+// Helper: get current "active" values — from palette if on that tab, else from mixer V
+function currentVals() {
+  const activeTab = document.querySelector('.tab.on')?.dataset.p;
+  if (activeTab === 'palette') {
+    const {R:rr,G:gg,B:bb} = hslToRgb(palH, palS, palL);
+    const r = Math.round(rr * (palRGBamt/255));
+    const g = Math.round(gg * (palRGBamt/255));
+    const b = Math.round(bb * (palRGBamt/255));
+    const {cw, ww} = wbToCwWw(palWB, palWAmt);
+    return {r, g, b, cw, ww, uv: palUVval};
+  }
+  return {...V};
+}
+
 function openSaveMo() {
   document.getElementById('colorName').value = '';
   document.getElementById('saveMo').classList.add('on');
@@ -954,8 +979,9 @@ function closeMo(){ document.getElementById('saveMo').classList.remove('on'); }
 
 function doSave() {
   const nm = document.getElementById('colorName').value.trim() || 'Unbenannt';
-  const {R,G,B} = computeRGB(V);
-  saved.push({nm, v:{...V}, master, rgb:{R,G,B}, ts:Date.now()});
+  const cv = currentVals();
+  const {R,G,B} = computeRGB(cv, 100);
+  saved.push({nm, v:cv, master, rgb:{R,G,B}, ts:Date.now()});
   persist();
   closeMo();
   toast('♡ „'+nm+'" gespeichert!');
@@ -965,6 +991,7 @@ function persist(){ localStorage.setItem('sh6_v3', JSON.stringify(saved)); }
 
 function clearAll(){
   if(!saved.length) return;
+  if(!confirm('Alle gespeicherten Farben löschen?')) return;
   saved=[]; persist(); renderSaved(); toast('Alle gelöscht');
 }
 
@@ -1028,7 +1055,7 @@ document.querySelectorAll('#dmxFmtToggle .sg-opt').forEach(opt => {
 });
 
 function resetMix(){
-  MIX = {cwR:.78,cwG:.86,cwB:1.00,wwR:1.00,wwG:.64,wwB:.28,uvR:.10,uvG:.00,uvB:.55};
+  MIX = {cwR:.78,cwG:.86,cwB:1.00,wwR:1.00,wwG:.64,wwB:.28,uvR:.35,uvG:.00,uvB:.65};
   mixKeys.forEach(k=>{
     document.getElementById(k).value = Math.round(MIX[k]*100);
     document.getElementById(k+'v').textContent = Math.round(MIX[k]*100)+'%';
