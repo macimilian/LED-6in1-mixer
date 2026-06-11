@@ -378,14 +378,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 
 <!-- ═══════════════ PRESETS ═══════════════ -->
 <div id="panel-presets" class="panel">
-  <div class="stitle">GRUNDFARBEN</div><div class="pg" id="pgBasic"></div>
-  <div class="stitle">WEISS & NATÜRLICH</div><div class="pg" id="pgWhite"></div>
-  <div class="stitle">AMBER & WARM</div><div class="pg" id="pgAmber"></div>
+  <div class="stitle">GRUNDFARBEN (RGB)</div><div class="pg" id="pgBasic"></div>
+  <div class="stitle">WEISSLICHT (CW · WW)</div><div class="pg" id="pgWhite"></div>
+  <div class="stitle">AMBER & WARMTON</div><div class="pg" id="pgAmber"></div>
   <div class="stitle">PASTELL & SOFT</div><div class="pg" id="pgPastel"></div>
-  <div class="stitle">BÜHNENLICHT</div><div class="pg" id="pgStage"></div>
-  <div class="stitle">CLUB & PARTY</div><div class="pg" id="pgClub"></div>
-  <div class="stitle">UV & SPECIAL FX</div><div class="pg" id="pgUV"></div>
-  <div class="stitle">STIMMUNG</div><div class="pg" id="pgMood"></div>
+  <div class="stitle">BÜHNE & THEATER</div><div class="pg" id="pgStage"></div>
+  <div class="stitle">CLUB & UV</div><div class="pg" id="pgClub"></div>
+  <div class="stitle">STIMMUNG & AMBIENTE</div><div class="pg" id="pgMood"></div>
 </div>
 
 <!-- ═══════════════ OVERLAY: GESPEICHERT ═══════════════ -->
@@ -831,96 +830,93 @@ function applyPalette() {
 }
 
 // ══════════════════════════════════════════════
-//  PRESETS
+//  PRESETS — fully curated per category
 // ══════════════════════════════════════════════
 const PRESET_GROUPS = {
+  // Pure RGB primary & secondary — no white, no UV
   pgBasic:[
-    {nm:'Rot',      v:{r:255,g:0,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Grün',     v:{r:0,g:255,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Blau',     v:{r:0,g:0,b:255,cw:0,ww:0,uv:0}},
-    {nm:'Cyan',     v:{r:0,g:255,b:255,cw:0,ww:0,uv:0}},
-    {nm:'Magenta',  v:{r:255,g:0,b:255,cw:0,ww:0,uv:0}},
-    {nm:'Gelb',     v:{r:255,g:220,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Orange',   v:{r:255,g:80,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Violett',  v:{r:130,g:0,b:200,cw:0,ww:0,uv:0}},
+    {nm:'Rot',        v:{r:255,g:0,  b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Grün',       v:{r:0,  g:255,b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Blau',       v:{r:0,  g:0,  b:255,cw:0,  ww:0,  uv:0}},
+    {nm:'Cyan',       v:{r:0,  g:255,b:255,cw:0,  ww:0,  uv:0}},
+    {nm:'Magenta',    v:{r:255,g:0,  b:255,cw:0,  ww:0,  uv:0}},
+    {nm:'Gelb',       v:{r:255,g:200,b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Orange',     v:{r:255,g:70, b:0,  cw:0,  ww:0,  uv:0}},
+    {nm:'Violett',    v:{r:100,g:0,  b:220,cw:0,  ww:0,  uv:0}},
   ],
+  // Pure white channels only — no RGB, no UV
   pgWhite:[
-    {nm:'Kalt WW',  v:{r:0,g:0,b:0,cw:255,ww:0,uv:0}},
-    {nm:'Neutral',  v:{r:0,g:0,b:0,cw:160,ww:140,uv:0}},
-    {nm:'Warm WW',  v:{r:0,g:0,b:0,cw:0,ww:255,uv:0}},
-    {nm:'Tageslicht',v:{r:0,g:10,b:40,cw:255,ww:60,uv:0}},
-    {nm:'Mondlicht',v:{r:0,g:0,b:30,cw:200,ww:0,uv:20}},
-    {nm:'Studio',   v:{r:0,g:0,b:0,cw:220,ww:100,uv:0}},
-    {nm:'Büro',     v:{r:0,g:0,b:0,cw:255,ww:30,uv:0}},
-    {nm:'Gemütlich',v:{r:20,g:0,b:0,cw:40,ww:220,uv:0}},
+    {nm:'CW 100%',    v:{r:0,g:0,b:0,cw:255,ww:0,  uv:0}},
+    {nm:'CW 50%',     v:{r:0,g:0,b:0,cw:128,ww:0,  uv:0}},
+    {nm:'WW 100%',    v:{r:0,g:0,b:0,cw:0,  ww:255,uv:0}},
+    {nm:'WW 50%',     v:{r:0,g:0,b:0,cw:0,  ww:128,uv:0}},
+    {nm:'CW+WW 100%', v:{r:0,g:0,b:0,cw:255,ww:255,uv:0}},
+    {nm:'Neutral',    v:{r:0,g:0,b:0,cw:180,ww:160,uv:0}},
+    {nm:'Tageslicht', v:{r:0,g:0,b:0,cw:255,ww:60, uv:0}},
+    {nm:'Studiospot', v:{r:0,g:0,b:0,cw:220,ww:100,uv:0}},
   ],
+  // Warm amber — WW + RGB orange/red
   pgAmber:[
-    {nm:'Bernstein',v:{r:255,g:120,b:0,cw:0,ww:180,uv:0}},
-    {nm:'Gold',     v:{r:255,g:190,b:0,cw:0,ww:140,uv:0}},
-    {nm:'Kerze',    v:{r:200,g:60,b:0,cw:0,ww:255,uv:0}},
-    {nm:'Feuer',    v:{r:255,g:40,b:0,cw:0,ww:100,uv:0}},
-    {nm:'Sahara',   v:{r:255,g:160,b:20,cw:0,ww:200,uv:0}},
-    {nm:'Kupfer',   v:{r:200,g:80,b:10,cw:0,ww:180,uv:0}},
-    {nm:'Sonnenunt.',v:{r:255,g:60,b:0,cw:0,ww:160,uv:0}},
-    {nm:'Herbst',   v:{r:220,g:100,b:0,cw:0,ww:140,uv:0}},
+    {nm:'Gold',       v:{r:255,g:180,b:0,  cw:0,ww:200,uv:0}},
+    {nm:'Bernstein',  v:{r:255,g:110,b:0,  cw:0,ww:180,uv:0}},
+    {nm:'Sonnenunt.', v:{r:255,g:50, b:0,  cw:0,ww:140,uv:0}},
+    {nm:'Feuer',      v:{r:255,g:30, b:0,  cw:0,ww:80, uv:0}},
+    {nm:'Kerze',      v:{r:180,g:40, b:0,  cw:0,ww:255,uv:0}},
+    {nm:'Kupfer',     v:{r:200,g:70, b:0,  cw:0,ww:160,uv:0}},
+    {nm:'Sahara',     v:{r:255,g:150,b:10, cw:0,ww:220,uv:0}},
+    {nm:'Herbstrot',  v:{r:220,g:80, b:0,  cw:0,ww:120,uv:0}},
   ],
+  // Soft pastel — desaturated with CW
   pgPastel:[
-    {nm:'Babyrosa', v:{r:200,g:80,b:120,cw:60,ww:40,uv:0}},
-    {nm:'Mintgrün', v:{r:20,g:180,b:100,cw:80,ww:0,uv:0}},
-    {nm:'Lavendel', v:{r:120,g:60,b:200,cw:40,ww:0,uv:30}},
-    {nm:'Pfirsich', v:{r:255,g:160,b:80,cw:0,ww:80,uv:0}},
-    {nm:'Eisblau',  v:{r:40,g:100,b:220,cw:100,ww:0,uv:0}},
-    {nm:'Lila-Rosa',v:{r:200,g:50,b:180,cw:30,ww:0,uv:20}},
-    {nm:'Pastellgelb',v:{r:240,g:220,b:60,cw:40,ww:60,uv:0}},
-    {nm:'Minteis',  v:{r:60,g:200,b:180,cw:80,ww:0,uv:0}},
+    {nm:'Babyrosa',   v:{r:220,g:80, b:120,cw:80, ww:30, uv:0}},
+    {nm:'Pfirsich',   v:{r:255,g:150,b:70, cw:0,  ww:100,uv:0}},
+    {nm:'Lavendel',   v:{r:140,g:60, b:210,cw:60, ww:0,  uv:0}},
+    {nm:'Mintgrün',   v:{r:20, g:200,b:110,cw:80, ww:0,  uv:0}},
+    {nm:'Eisblau',    v:{r:30, g:100,b:230,cw:100,ww:0,  uv:0}},
+    {nm:'Flieder',    v:{r:180,g:80, b:200,cw:50, ww:0,  uv:0}},
+    {nm:'Pastellgelb',v:{r:240,g:210,b:50, cw:40, ww:60, uv:0}},
+    {nm:'Minteis',    v:{r:40, g:200,b:180,cw:90, ww:0,  uv:0}},
   ],
+  // Stage & theatre — spots, dramatic colours
   pgStage:[
-    {nm:'Bühne Tag',v:{r:0,g:0,b:0,cw:220,ww:180,uv:0}},
-    {nm:'Spot Warm',v:{r:40,g:0,b:0,cw:60,ww:240,uv:0}},
-    {nm:'Spot Kalt',v:{r:0,g:0,b:20,cw:255,ww:40,uv:0}},
-    {nm:'Drama Rot',v:{r:255,g:0,b:0,cw:0,ww:60,uv:0}},
-    {nm:'Drama Blau',v:{r:0,g:0,b:255,cw:40,ww:0,uv:0}},
-    {nm:'Theater',  v:{r:240,g:130,b:0,cw:0,ww:180,uv:0}},
-    {nm:'Oper',     v:{r:160,g:0,b:70,cw:0,ww:80,uv:20}},
-    {nm:'Musical',  v:{r:240,g:70,b:0,cw:40,ww:140,uv:0}},
-    {nm:'Noir',     v:{r:25,g:0,b:70,cw:0,ww:0,uv:60}},
-    {nm:'Thriller', v:{r:0,g:70,b:0,cw:0,ww:0,uv:30}},
-    {nm:'Requiem',  v:{r:70,g:0,b:0,cw:0,ww:30,uv:70}},
-    {nm:'Fanfare',  v:{r:240,g:190,b:0,cw:40,ww:180,uv:0}},
+    {nm:'Spot WW',    v:{r:0,  g:0,  b:0,  cw:80, ww:255,uv:0}},
+    {nm:'Spot CW',    v:{r:0,  g:0,  b:0,  cw:255,ww:60, uv:0}},
+    {nm:'Spot Natur', v:{r:0,  g:0,  b:0,  cw:200,ww:200,uv:0}},
+    {nm:'Amber Spot', v:{r:240,g:120,b:0,  cw:0,  ww:200,uv:0}},
+    {nm:'Drama Rot',  v:{r:255,g:0,  b:0,  cw:0,  ww:60, uv:0}},
+    {nm:'Drama Blau', v:{r:0,  g:0,  b:255,cw:40, ww:0,  uv:0}},
+    {nm:'Oper Lila',  v:{r:160,g:0,  b:80, cw:0,  ww:60, uv:30}},
+    {nm:'Musical',    v:{r:240,g:60, b:0,  cw:40, ww:160,uv:0}},
+    {nm:'Fanfare',    v:{r:240,g:180,b:0,  cw:60, ww:180,uv:0}},
+    {nm:'Noir',       v:{r:20, g:0,  b:60, cw:0,  ww:0,  uv:60}},
+    {nm:'Thriller',   v:{r:0,  g:80, b:0,  cw:0,  ww:0,  uv:20}},
+    {nm:'Requiem',    v:{r:80, g:0,  b:0,  cw:0,  ww:20, uv:80}},
   ],
+  // Club & party — saturated, neon, UV
   pgClub:[
-    {nm:'Club UV',  v:{r:15,g:0,b:30,cw:0,ww:0,uv:255}},
-    {nm:'Neon Pink',v:{r:240,g:0,b:100,cw:0,ww:0,uv:60}},
-    {nm:'Acid Green',v:{r:15,g:240,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Rave Blue',v:{r:0,g:0,b:240,cw:0,ww:0,uv:80}},
-    {nm:'Lila Neon',v:{r:140,g:0,b:240,cw:0,ww:0,uv:120}},
-    {nm:'Teal Club',v:{r:0,g:200,b:180,cw:0,ww:0,uv:30}},
-    {nm:'Hot Red',  v:{r:255,g:0,b:0,cw:0,ww:0,uv:0}},
-    {nm:'Strobo WW',v:{r:0,g:0,b:0,cw:200,ww:240,uv:0}},
+    {nm:'UV Pur',     v:{r:0,  g:0,  b:0,  cw:0,ww:0,uv:255}},
+    {nm:'UV Lila',    v:{r:60, g:0,  b:100,cw:0,ww:0,uv:255}},
+    {nm:'UV Pink',    v:{r:100,g:0,  b:60, cw:0,ww:0,uv:220}},
+    {nm:'UV Blau',    v:{r:0,  g:0,  b:80, cw:0,ww:0,uv:200}},
+    {nm:'Neon Pink',  v:{r:255,g:0,  b:120,cw:0,ww:0,uv:40}},
+    {nm:'Acid Green', v:{r:10, g:255,b:0,  cw:0,ww:0,uv:0}},
+    {nm:'Neon Blau',  v:{r:0,  g:0,  b:255,cw:0,ww:0,uv:60}},
+    {nm:'Neon Lila',  v:{r:140,g:0,  b:255,cw:0,ww:0,uv:100}},
   ],
-  pgUV:[
-    {nm:'UV Pur',   v:{r:0,g:0,b:0,cw:0,ww:0,uv:255}},
-    {nm:'UV+Violett',v:{r:50,g:0,b:80,cw:0,ww:0,uv:255}},
-    {nm:'UV+Blau',  v:{r:0,g:0,b:60,cw:0,ww:0,uv:200}},
-    {nm:'UV-Glow',  v:{r:70,g:0,b:160,cw:0,ww:0,uv:160}},
-    {nm:'UV-Ghost', v:{r:0,g:15,b:30,cw:20,ww:0,uv:180}},
-    {nm:'UV-Pink',  v:{r:90,g:0,b:50,cw:0,ww:0,uv:220}},
-    {nm:'UV-Dunkel',v:{r:0,g:0,b:0,cw:0,ww:0,uv:80}},
-    {nm:'UV-Weiss', v:{r:0,g:0,b:0,cw:30,ww:0,uv:255}},
-  ],
+  // Mood & atmosphere
   pgMood:[
-    {nm:'Romantik', v:{r:200,g:0,b:50,cw:0,ww:100,uv:0}},
-    {nm:'Kamin',    v:{r:240,g:45,b:0,cw:0,ww:180,uv:0}},
-    {nm:'Meditation',v:{r:70,g:0,b:160,cw:0,ww:15,uv:60}},
-    {nm:'Aquarium', v:{r:0,g:70,b:240,cw:60,ww:0,uv:20}},
-    {nm:'Dschungel',v:{r:0,g:180,b:0,cw:0,ww:30,uv:0}},
-    {nm:'Sonnenauf.',v:{r:240,g:90,b:0,cw:60,ww:160,uv:0}},
-    {nm:'Tiefmeer', v:{r:0,g:15,b:180,cw:40,ww:0,uv:60}},
-    {nm:'Polarlicht',v:{r:0,g:240,b:100,cw:0,ww:0,uv:80}},
-    {nm:'Lagerfeuer',v:{r:240,g:60,b:0,cw:0,ww:240,uv:0}},
-    {nm:'Morgenröte',v:{r:240,g:110,b:50,cw:40,ww:140,uv:0}},
-    {nm:'Nebel',    v:{r:90,g:90,b:130,cw:90,ww:50,uv:0}},
-    {nm:'Nachthimm.',v:{r:0,g:0,b:100,cw:0,ww:0,uv:40}},
+    {nm:'Kamin',      v:{r:240,g:40, b:0,  cw:0,  ww:200,uv:0}},
+    {nm:'Romantik',   v:{r:200,g:0,  b:50, cw:0,  ww:80, uv:0}},
+    {nm:'Sonnenauf.', v:{r:240,g:80, b:0,  cw:60, ww:180,uv:0}},
+    {nm:'Morgenröte', v:{r:255,g:100,b:40, cw:40, ww:160,uv:0}},
+    {nm:'Aquarium',   v:{r:0,  g:80, b:240,cw:60, ww:0,  uv:15}},
+    {nm:'Tiefmeer',   v:{r:0,  g:10, b:190,cw:40, ww:0,  uv:50}},
+    {nm:'Polarlicht', v:{r:0,  g:230,b:100,cw:0,  ww:0,  uv:70}},
+    {nm:'Dschungel',  v:{r:0,  g:190,b:0,  cw:0,  ww:30, uv:0}},
+    {nm:'Meditation', v:{r:60, g:0,  b:160,cw:0,  ww:10, uv:60}},
+    {nm:'Mondlicht',  v:{r:0,  g:0,  b:30, cw:200,ww:0,  uv:20}},
+    {nm:'Nebel',      v:{r:80, g:90, b:140,cw:100,ww:40, uv:0}},
+    {nm:'Nachthimm.', v:{r:0,  g:0,  b:120,cw:0,  ww:0,  uv:40}},
   ],
 };
 
