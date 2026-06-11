@@ -396,7 +396,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   <div class="ov-body">
     <div class="row-btns">
       <button class="btn btn-out" style="flex:1" onclick="openSaveMo()">＋ AKTUELLE FARBE SPEICHERN</button>
-      <button class="btn btn-red" onclick="clearAll()">ALLE ✕</button>
+      <button class="btn btn-red" onclick="if(confirm('Wirklich alle Daten löschen?')){clearAll()}">ALLE ✕</button>
     </div>
     <div class="saved-grid" id="savedGrid"></div>
     <div id="emptyState" class="empty">
