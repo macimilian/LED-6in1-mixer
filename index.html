@@ -8,8 +8,80 @@
 <meta name="apple-mobile-web-app-title" content="LED Mixer">
 <meta name="theme-color" content="#07070e">
 <title>6in1 LED Mixer</title>
-<!-- Inline SVG icon as data URI for apple-touch-icon -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%2307070e'/%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%2307070e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='90' cy='90' r='55' fill='url(%23g)' opacity='.15'/%3E%3Ccircle cx='90' cy='90' r='48' fill='none' stroke='%23b8ff00' stroke-width='3' opacity='.6'/%3E%3Ccircle cx='90' cy='56' r='10' fill='%23ff2d4a'/%3E%3Ccircle cx='118' cy='73' r='10' fill='%23ffaa33'/%3E%3Ccircle cx='118' cy='107' r='10' fill='%2300e87a'/%3E%3Ccircle cx='90' cy='124' r='10' fill='%233d9fff'/%3E%3Ccircle cx='62' cy='107' r='10' fill='%23a040ff'/%3E%3Ccircle cx='62' cy='73' r='10' fill='%23b8ff00'/%3E%3Ccircle cx='90' cy='90' r='16' fill='%23ffffff' opacity='.9'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#07070e">
+<title>6in1 LED Mixer</title>
+
+<script>
+/* =========================
+   1. ZENTRALES ICON (EINMAL!)
+   ========================= */
+const ICON_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <rect width="180" height="180" rx="36" fill="#07070e"/>
+  <defs>
+    <radialGradient id="g" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#07070e"/>
+    </radialGradient>
+  </defs>
+  <circle cx="90" cy="90" r="55" fill="url(#g)" opacity=".15"/>
+  <circle cx="90" cy="90" r="48" fill="none" stroke="#b8ff00" stroke-width="3" opacity=".6"/>
+  <circle cx="90" cy="56" r="10" fill="#ff2d4a"/>
+  <circle cx="118" cy="73" r="10" fill="#ffaa33"/>
+  <circle cx="118" cy="107" r="10" fill="#00e87a"/>
+  <circle cx="90" cy="124" r="10" fill="#3d9fff"/>
+  <circle cx="62" cy="107" r="10" fill="#a040ff"/>
+  <circle cx="62" cy="73" r="10" fill="#b8ff00"/>
+  <circle cx="90" cy="90" r="16" fill="#ffffff" opacity=".9"/>
+</svg>
+`;
+
+const ICON_DATA = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(ICON_SVG);
+</script>
+
+<!-- =========================
+     2. APPLE ICON (iOS HOME SCREEN)
+     ========================= -->
+<link rel="apple-touch-icon" href="" id="appleIcon">
+
+<!-- =========================
+     3. FAVICON (BROWSER TAB)
+     ========================= -->
+<link rel="icon" href="" id="favicon">
+
+<!-- =========================
+     4. MANIFEST (INLINE)
+     ========================= -->
+<link rel="manifest" id="manifest-link">
+
+<script>
+/* Apple + Favicon setzen */
+document.getElementById("appleIcon").href = ICON_DATA;
+document.getElementById("favicon").href = ICON_DATA;
+
+/* Manifest inline erzeugen */
+const manifest = {
+  name: "LED Mixer",
+  short_name: "LED Mixer",
+  start_url: "./index.html",
+  display: "standalone",
+  background_color: "#07070e",
+  theme_color: "#07070e",
+  icons: [
+    {
+      src: ICON_DATA,
+      sizes: "180x180",
+      type: "image/svg+xml"
+    }
+  ]
+};
+
+const blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+const url = URL.createObjectURL(blob);
+document.getElementById("manifest-link").href = url;
+</script>
+<!-- ALT Inline SVG icon as data URI for apple-touch-icon -->
+<!-- ALT <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%2307070e'/%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%2307070e'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='90' cy='90' r='55' fill='url(%23g)' opacity='.15'/%3E%3Ccircle cx='90' cy='90' r='48' fill='none' stroke='%23b8ff00' stroke-width='3' opacity='.6'/%3E%3Ccircle cx='90' cy='56' r='10' fill='%23ff2d4a'/%3E%3Ccircle cx='118' cy='73' r='10' fill='%23ffaa33'/%3E%3Ccircle cx='118' cy='107' r='10' fill='%2300e87a'/%3E%3Ccircle cx='90' cy='124' r='10' fill='%233d9fff'/%3E%3Ccircle cx='62' cy='107' r='10' fill='%23a040ff'/%3E%3Ccircle cx='62' cy='73' r='10' fill='%23b8ff00'/%3E%3Ccircle cx='90' cy='90' r='16' fill='%23ffffff' opacity='.9'/%3E%3C/svg%3E">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
 :root{
