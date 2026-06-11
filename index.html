@@ -419,36 +419,40 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
       <div class="sg-title">FARBMISCHMODELL</div>
       <div class="sg-note" style="margin-bottom:10px">
         Wie wirken CW, WW und UV auf die RGB-Vorschau?
-        Die Werte bestimmen den RGB-Anteil jedes Kanals.
-        Kalt Weiß 7500K ≈ bläulich, Warm Weiß 3200K ≈ amber, UV 395nm ≈ lila.
+        Kalt Weiß 7500K ≈ bläulich, Warm Weiß 3200K ≈ amber, UV 395nm ≈ hell-lila.
       </div>
-      <div class="sg-row"><div class="sg-lbl">CW → Rot</div>
+      <div style="font-size:9px;font-weight:800;color:#c8e0ff;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #252540">KALT WEISS (CW)</div>
+      <div class="sg-row"><div class="sg-lbl">→ Rot</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="cwR" min="0" max="100" value="78"></div>
         <div class="sg-val" id="cwRv">78%</div></div>
-      <div class="sg-row"><div class="sg-lbl">CW → Grün</div>
+      <div class="sg-row"><div class="sg-lbl">→ Grün</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="cwG" min="0" max="100" value="86"></div>
         <div class="sg-val" id="cwGv">86%</div></div>
-      <div class="sg-row"><div class="sg-lbl">CW → Blau</div>
+      <div class="sg-row" style="margin-bottom:12px"><div class="sg-lbl">→ Blau</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="cwB" min="0" max="100" value="100"></div>
         <div class="sg-val" id="cwBv">100%</div></div>
-      <div class="sg-row"><div class="sg-lbl">WW → Rot</div>
+
+      <div style="font-size:9px;font-weight:800;color:#ffaa33;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #252540">WARM WEISS (WW)</div>
+      <div class="sg-row"><div class="sg-lbl">→ Rot</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="wwR" min="0" max="100" value="100"></div>
         <div class="sg-val" id="wwRv">100%</div></div>
-      <div class="sg-row"><div class="sg-lbl">WW → Grün</div>
+      <div class="sg-row"><div class="sg-lbl">→ Grün</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="wwG" min="0" max="100" value="64"></div>
         <div class="sg-val" id="wwGv">64%</div></div>
-      <div class="sg-row"><div class="sg-lbl">WW → Blau</div>
+      <div class="sg-row" style="margin-bottom:12px"><div class="sg-lbl">→ Blau</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="wwB" min="0" max="100" value="28"></div>
         <div class="sg-val" id="wwBv">28%</div></div>
-      <div class="sg-row"><div class="sg-lbl">UV → Rot</div>
-        <div class="sl-wrap" style="flex:1"><input type="range" id="uvR" min="0" max="100" value="10"></div>
-        <div class="sg-val" id="uvRv">10%</div></div>
-      <div class="sg-row"><div class="sg-lbl">UV → Grün</div>
+
+      <div style="font-size:9px;font-weight:800;color:#a040ff;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #252540">UV (395nm)</div>
+      <div class="sg-row"><div class="sg-lbl">→ Rot</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvR" min="0" max="100" value="35"></div>
+        <div class="sg-val" id="uvRv">35%</div></div>
+      <div class="sg-row"><div class="sg-lbl">→ Grün</div>
         <div class="sl-wrap" style="flex:1"><input type="range" id="uvG" min="0" max="100" value="0"></div>
         <div class="sg-val" id="uvGv">0%</div></div>
-      <div class="sg-row"><div class="sg-lbl">UV → Blau</div>
-        <div class="sl-wrap" style="flex:1"><input type="range" id="uvB" min="0" max="100" value="55"></div>
-        <div class="sg-val" id="uvBv">55%</div></div>
+      <div class="sg-row"><div class="sg-lbl">→ Blau</div>
+        <div class="sl-wrap" style="flex:1"><input type="range" id="uvB" min="0" max="100" value="65"></div>
+        <div class="sg-val" id="uvBv">65%</div></div>
       <button class="btn btn-out" style="width:100%;margin-top:4px" onclick="resetMix()">↺ Standard wiederherstellen</button>
     </div>
 
@@ -490,7 +494,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 // ══════════════════════════════════════════════
 //  CONFIG
 // ══════════════════════════════════════════════
-let MIX = { cwR:.78,cwG:.86,cwB:1.00, wwR:1.00,wwG:.64,wwB:.28, uvR:.10,uvG:.00,uvB:.55 };
+let MIX = { cwR:.78,cwG:.86,cwB:1.00, wwR:1.00,wwG:.64,wwB:.28, uvR:.35,uvG:.00,uvB:.65 };
 let dmxFmt = 'short';
 
 const CHS = [
@@ -1024,7 +1028,7 @@ document.querySelectorAll('#dmxFmtToggle .sg-opt').forEach(opt => {
 });
 
 function resetMix(){
-  MIX = {cwR:.78,cwG:.86,cwB:1.00,wwR:1.00,wwG:.64,wwB:.28,uvR:.10,uvG:.00,uvB:.55};
+  MIX = {cwR:.78,cwG:.86,cwB:1.00,wwR:1.00,wwG:.64,wwB:.28,uvR:.35,uvG:.00,uvB:.65};
   mixKeys.forEach(k=>{
     document.getElementById(k).value = Math.round(MIX[k]*100);
     document.getElementById(k+'v').textContent = Math.round(MIX[k]*100)+'%';
